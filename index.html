@@ -48,7 +48,6 @@
         .page-flex.active { display: flex; }
         
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        
         .lang-active { color: #facc15; text-decoration: underline; }
     </style>
 </head>
@@ -85,24 +84,18 @@
         <h1 class="text-center text-4xl font-bold text-white mt-8 mb-10 drop-shadow-md" data-i18n="welcome">Welcome</h1>
 
         <div class="bg-[#e4f5ca] rounded-[2rem] p-8 shadow-lg mt-4">
-            
-            <!-- ส่วน Tab สลับระหว่าง Login และ Sign up -->
             <div class="flex justify-center space-x-6 mb-6">
                 <button type="button" id="tab-login" class="text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all" onclick="setAuthMode('login')" data-i18n="tabLogin">Login</button>
                 <button type="button" id="tab-signup" class="text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all" onclick="setAuthMode('signup')" data-i18n="tabSignup">Sign up</button>
             </div>
 
             <form id="auth-form" class="space-y-5">
-                
-                <!-- ซ่อนช่องนี้เมื่ออยู่ในโหมด Login -->
                 <div id="field-username" class="hidden">
                     <input type="text" id="username" data-i18n="phUsername" placeholder="Username (for new user)" class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 </div>
-
                 <input type="email" id="email" data-i18n="phEmail" placeholder="Email (Gmail)" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 <input type="password" id="password" data-i18n="phPassword" placeholder="Password" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 
-                <!-- ซ่อนช่องนี้เมื่ออยู่ในโหมด Login -->
                 <div id="field-terms" class="flex items-center pl-2 pt-2 hidden">
                     <input type="checkbox" id="terms" class="w-4 h-4 text-[#1b3a24] rounded focus:ring-green-500">
                     <label for="terms" class="ml-2 text-sm font-bold text-[#1b3a24]" data-i18n="terms">I accept the terms and conditions</label>
@@ -117,15 +110,17 @@
 
     <!-- ================= 3. หน้าโฮม (Home) ================= -->
     <div id="page-home" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="flex items-center p-6 pt-10">
-            <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white shadow-sm">
-                <img src="https://via.placeholder.com/150" class="w-full h-full object-cover">
+        <!-- แก้ไข: เพิ่มการกดที่โปรไฟล์เพื่อไปหน้าแก้ไข -->
+        <div class="flex items-center p-6 pt-10 cursor-pointer hover:bg-green-100 transition rounded-b-3xl" onclick="navigate('page-profile')">
+            <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
+                <img id="home-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
             </div>
-            <div class="ml-4">
-                <h1 class="text-xl font-bold text-gray-800">หมูเด้งเด้งเองจ้า</h1>
-                <p class="text-sm text-gray-500 cursor-pointer" data-i18n="profile">Profile &gt;</p>
+            <div class="ml-4 truncate">
+                <h1 id="home-display-name" class="text-xl font-bold text-gray-800 truncate">New User</h1>
+                <p class="text-sm text-gray-500" data-i18n="profile">Profile &gt;</p>
             </div>
         </div>
+
         <div class="mx-5 bg-white rounded-2xl p-4 shadow-sm flex items-center">
             <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
                 <i class="fa-solid fa-trash-can"></i>
@@ -154,7 +149,36 @@
         </div>
     </div>
 
-    <!-- ================= 4. หน้าประวัติ / พอยต์ (History / Point) ================= -->
+    <!-- ================= 4. หน้าโปรไฟล์ (Profile / Edit) - หน้าใหม่ ================= -->
+    <div id="page-profile" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
+        <div class="p-6 pt-10 flex items-center">
+            <i class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-4 text-gray-800" onclick="navigate('page-home')"></i>
+            <h1 class="text-2xl font-bold text-gray-800" data-i18n="editProfile">Edit Profile</h1>
+        </div>
+        
+        <div class="mx-5 flex flex-col items-center mt-4">
+            <!-- ส่วนรูปโปรไฟล์ที่กดเปลี่ยนได้ -->
+            <div class="relative w-36 h-36 rounded-full bg-gray-300 overflow-hidden border-4 border-white shadow-lg mb-6 group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
+                <img id="edit-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover transition duration-300 group-hover:brightness-50">
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-camera text-white text-3xl"></i>
+                </div>
+            </div>
+            <!-- Input สำหรับเลือกไฟล์ภาพซ่อนไว้ -->
+            <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="previewImage(event)">
+            
+            <div class="w-full bg-white p-6 rounded-[2rem] shadow-sm">
+                <label class="block text-sm font-bold text-gray-700 mb-2 pl-2" data-i18n="displayName">Display Name</label>
+                <input type="text" id="edit-display-name" class="w-full px-5 py-3.5 rounded-full border-2 border-gray-100 outline-none focus:border-green-400 focus:bg-green-50 transition mb-8 text-gray-800 font-medium">
+                
+                <button id="btn-save-profile" class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-full shadow-md hover:bg-green-900 transition text-lg" data-i18n="saveChanges">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 5. หน้าประวัติ / พอยต์ (History / Point) ================= -->
     <div id="page-history" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="pointHistory">Point History</h1>
@@ -176,61 +200,34 @@
                 </div>
                 <div class="font-bold text-green-600">+133</div>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-box"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="recycleCardboard">Recycled Cardboard</p><p class="text-xs text-gray-400">Yesterday</p></div>
-                </div>
-                <div class="font-bold text-green-600">+67</div>
-            </div>
         </div>
     </div>
 
-    <!-- ================= 5. หน้ารางวัล (Rewards) ================= -->
+    <!-- ================= 6. หน้ารางวัล (Rewards) ================= -->
     <div id="page-rewards" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
-            <p class="text-sm text-gray-500" data-i18n="rewardsDesc">Redeem your hard-earned points</p>
         </div>
         <div class="mx-5 grid grid-cols-2 gap-4">
-            <!-- สินค้าที่ 1 -->
             <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
-                <div class="w-20 h-20 mb-2 flex items-center justify-center bg-blue-50 rounded-full">
-                    <i class="fa-solid fa-shirt text-4xl text-blue-400"></i>
-                </div>
+                <div class="w-20 h-20 mb-2 flex items-center justify-center bg-blue-50 rounded-full"><i class="fa-solid fa-shirt text-4xl text-blue-400"></i></div>
                 <h3 class="text-md font-bold text-gray-800 text-center" data-i18n="itemShirt">Eco T-Shirt</h3>
                 <p class="text-sm font-bold mt-1 text-orange-500">2,000 pts</p>
                 <button class="mt-3 w-full bg-green-500 text-white text-xs font-bold py-2 rounded-full hover:bg-green-600" data-i18n="btnRedeem">Redeem</button>
             </div>
-            <!-- สินค้าที่ 2 -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
-                <div class="w-20 h-20 mb-2 flex items-center justify-center bg-orange-50 rounded-full">
-                    <i class="fa-solid fa-mug-hot text-4xl text-orange-400"></i>
-                </div>
-                <h3 class="text-md font-bold text-gray-800 text-center" data-i18n="itemMug">Coffee Mug</h3>
-                <p class="text-sm font-bold mt-1 text-orange-500">800 pts</p>
-                <button class="mt-3 w-full bg-green-500 text-white text-xs font-bold py-2 rounded-full hover:bg-green-600" data-i18n="btnRedeem">Redeem</button>
-            </div>
         </div>
     </div>
 
-    <!-- ================= 6. หน้าตั้งค่า (Setting) ================= -->
+    <!-- ================= 7. หน้าตั้งค่า (Setting) ================= -->
     <div id="page-setting" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="settings">Settings</h1>
         </div>
         <div class="mx-5 space-y-4">
-            <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer">
+            <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer" onclick="navigate('page-profile')">
                 <div class="flex items-center">
                     <i class="fa-solid fa-user text-gray-500 text-lg w-8 text-center"></i>
-                    <span class="ml-2 font-bold text-gray-700" data-i18n="setAccount">Account</span>
-                </div>
-                <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
-            </div>
-            <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-bell text-gray-500 text-lg w-8 text-center"></i>
-                    <span class="ml-2 font-bold text-gray-700" data-i18n="setNotify">Notifications</span>
+                    <span class="ml-2 font-bold text-gray-700" data-i18n="editProfile">Edit Profile</span>
                 </div>
                 <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
             </div>
@@ -244,36 +241,20 @@
 
     <!-- ================= เมนูด้านล่าง (Bottom Navigation) ================= -->
     <div id="bottom-nav" class="absolute bottom-0 w-full bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
-        
-        <!-- Home -->
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group" onclick="navigate('page-home')" id="nav-home">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]">
-                <i class="fa-solid fa-house"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]"><i class="fa-solid fa-house"></i></div>
             <span class="text-xs mt-1 font-semibold nav-text text-white" data-i18n="navHome">Home</span>
         </div>
-        
-        <!-- Point -->
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-history')" id="nav-history">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg">
-                <i class="fa-regular fa-trash-can"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-regular fa-trash-can"></i></div>
             <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navPoint">Point</span>
         </div>
-        
-        <!-- Reward -->
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-rewards')" id="nav-rewards">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg">
-                <i class="fa-solid fa-gift"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gift"></i></div>
             <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navReward">Reward</span>
         </div>
-        
-        <!-- Setting -->
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-setting')" id="nav-setting">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg">
-                <i class="fa-solid fa-gear"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gear"></i></div>
             <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navSetting">Setting</span>
         </div>
     </div>
@@ -283,7 +264,8 @@
 <!-- ================= สคริปต์การทำงาน ================= -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    // นำเข้า onAuthStateChanged และ updateProfile เพิ่มเติม
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
@@ -298,10 +280,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // --- สถานะโหมดปัจจุบัน (Login หรือ Signup) ---
-    let currentAuthMode = 'login'; // เริ่มต้นที่โหมด Login
+    let currentAuthMode = 'login'; 
+    let activeUser = null; // เก็บข้อมูลผู้ใช้ที่ล็อกอินอยู่
+    let tempPhotoDataURL = null; // เก็บภาพชั่วคราวเวลาเลือกใหม่
 
-    // --- ระบบเปลี่ยนภาษา (I18N) ---
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
@@ -330,16 +312,16 @@
             pointHistory: "Point History",
             historyDesc: "See how you earned your points",
             recyclePlastic: "Recycled Plastic",
-            recycleCardboard: "Recycled Cardboard",
             rewards: "Rewards",
-            rewardsDesc: "Redeem your hard-earned points",
             itemShirt: "Eco T-Shirt",
-            itemMug: "Coffee Mug",
             btnRedeem: "Redeem",
             settings: "Settings",
-            setAccount: "Account",
-            setNotify: "Notifications",
-            btnLogout: "Log Out"
+            btnLogout: "Log Out",
+            // คำแปลใหม่สำหรับหน้าโปรไฟล์
+            editProfile: "Edit Profile",
+            displayName: "Display Name",
+            saveChanges: "Save Changes",
+            saveSuccess: "Profile updated successfully!"
         },
         th: {
             slogan: "ทุกคะแนนมีความหมาย ทุกรางวัลมีค่า",
@@ -368,128 +350,166 @@
             pointHistory: "ประวัติคะแนน",
             historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
             recyclePlastic: "รีไซเคิลพลาสติก",
-            recycleCardboard: "รีไซเคิลกล่องกระดาษ",
             rewards: "ของรางวัล",
-            rewardsDesc: "แลกของรางวัลด้วยคะแนนของคุณ",
             itemShirt: "เสื้อยืดรักษ์โลก",
-            itemMug: "แก้วกาแฟ",
             btnRedeem: "แลกรางวัล",
             settings: "การตั้งค่า",
-            setAccount: "บัญชีผู้ใช้",
-            setNotify: "การแจ้งเตือน",
-            btnLogout: "ออกจากระบบ"
+            btnLogout: "ออกจากระบบ",
+            // คำแปลใหม่สำหรับหน้าโปรไฟล์
+            editProfile: "แก้ไขโปรไฟล์",
+            displayName: "ชื่อที่แสดง",
+            saveChanges: "บันทึกการเปลี่ยนแปลง",
+            saveSuccess: "อัปเดตโปรไฟล์สำเร็จ!"
         }
     };
 
-    // ฟังก์ชันสลับภาษา
     window.setLanguage = function(lang) {
         document.getElementById('btn-en').classList.remove('lang-active');
         document.getElementById('btn-th').classList.remove('lang-active');
         document.getElementById(`btn-${lang}`).classList.add('lang-active');
-
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (translations[lang][key]) {
-                if (el.tagName === 'INPUT') {
-                    el.placeholder = translations[lang][key];
-                } else {
-                    el.innerHTML = translations[lang][key];
-                }
+                if (el.tagName === 'INPUT') el.placeholder = translations[lang][key];
+                else el.innerHTML = translations[lang][key];
             }
         });
     };
 
-    // --- ฟังก์ชันสลับโหมด Login / Sign up ---
     window.setAuthMode = function(mode) {
         currentAuthMode = mode;
         const tabLogin = document.getElementById('tab-login');
         const tabSignup = document.getElementById('tab-signup');
-        const fieldUsername = document.getElementById('field-username');
-        const fieldTerms = document.getElementById('field-terms');
-        const termsCheckbox = document.getElementById('terms');
-        const btnSubmit = document.getElementById('btn-submit');
-        
-        // เช็คภาษาปัจจุบันเพื่ออัปเดตปุ่มให้ตรง
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
 
         if (mode === 'login') {
-            // ไฮไลต์ Tab Login
             tabLogin.className = "text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all";
             tabSignup.className = "text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all";
-            
-            // ซ่อน Username และ ข้อตกลงเงื่อนไข
-            fieldUsername.classList.add('hidden');
-            fieldTerms.classList.add('hidden');
-            termsCheckbox.required = false; // ยกเลิกบังคับติ๊กเงื่อนไข
-            
-            // เปลี่ยนข้อความปุ่ม Submit เป็น Login
-            btnSubmit.setAttribute('data-i18n', 'btnLogin');
-            btnSubmit.innerHTML = translations[currentLang].btnLogin;
-            
+            document.getElementById('field-username').classList.add('hidden');
+            document.getElementById('field-terms').classList.add('hidden');
+            document.getElementById('terms').required = false;
+            document.getElementById('btn-submit').setAttribute('data-i18n', 'btnLogin');
+            document.getElementById('btn-submit').innerHTML = translations[currentLang].btnLogin;
         } else {
-            // ไฮไลต์ Tab Sign up
             tabSignup.className = "text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all";
             tabLogin.className = "text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all";
-            
-            // แสดง Username และ ข้อตกลงเงื่อนไข
-            fieldUsername.classList.remove('hidden');
-            fieldTerms.classList.remove('hidden');
-            termsCheckbox.required = true; // บังคับติ๊กเงื่อนไข
-            
-            // เปลี่ยนข้อความปุ่ม Submit เป็น Sign up
-            btnSubmit.setAttribute('data-i18n', 'btnSignup');
-            btnSubmit.innerHTML = translations[currentLang].btnSignup;
+            document.getElementById('field-username').classList.remove('hidden');
+            document.getElementById('field-terms').classList.remove('hidden');
+            document.getElementById('terms').required = true;
+            document.getElementById('btn-submit').setAttribute('data-i18n', 'btnSignup');
+            document.getElementById('btn-submit').innerHTML = translations[currentLang].btnSignup;
         }
     };
 
-    // ตั้งค่าเริ่มต้นของภาษาและโหมด
     setLanguage('en');
-    setAuthMode('login'); // เริ่มแรกให้แสดงหน้า Login
+    setAuthMode('login');
 
-    // --- จัดการการกด Submit ฟอร์ม ---
+    // ==========================================
+    // ตรวจสอบสถานะการล็อกอิน และดึงข้อมูล Profile
+    // ==========================================
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            activeUser = user;
+            // ดึงข้อมูลชื่อและรูปภาพ ถ้าไม่มีให้ตั้งค่าเริ่มต้น
+            const displayName = user.displayName || (currentAuthMode === 'signup' ? document.getElementById('username').value : "New User");
+            const photoURL = user.photoURL || "https://via.placeholder.com/150";
+            
+            // อัปเดตหน้า Home
+            document.getElementById('home-display-name').textContent = displayName;
+            document.getElementById('home-profile-pic').src = photoURL;
+            
+            // อัปเดตหน้า Edit Profile
+            document.getElementById('edit-display-name').value = displayName;
+            document.getElementById('edit-profile-pic').src = photoURL;
+
+            // หากเพิ่งสมัครสมาชิกใหม่และยังไม่มีชื่อ ให้ Update ชื่อทันที
+            if(!user.displayName && document.getElementById('username').value) {
+                 updateProfile(user, { displayName: document.getElementById('username').value });
+            }
+        } else {
+            activeUser = null;
+        }
+    });
+
+    // แสดงภาพตัวอย่างเมื่อผู้ใช้กดเลือกรูปโปรไฟล์ใหม่
+    window.previewImage = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempPhotoDataURL = e.target.result; // เก็บเป็น Base64
+                document.getElementById('edit-profile-pic').src = tempPhotoDataURL;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // บันทึกโปรไฟล์ (อัปเดตชื่อและรูปภาพขึ้น Firebase)
+    document.getElementById('btn-save-profile').addEventListener('click', () => {
+        if (!activeUser) return;
+        
+        const newDisplayName = document.getElementById('edit-display-name').value;
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        
+        // กำหนดข้อมูลที่จะอัปเดต
+        const profileUpdates = {
+            displayName: newDisplayName
+        };
+
+        // หากมีการเลือกภาพใหม่ ให้อัปเดต photoURL ด้วย
+        if (tempPhotoDataURL) {
+            profileUpdates.photoURL = tempPhotoDataURL; 
+            /* หมายเหตุสำหรับผู้พัฒนา: ในระบบจริงที่มีรูปขนาดใหญ่ ควรใช้ Firebase Storage 
+               ในการอัปโหลดรูปภาพแล้วนำ URL มาใส่ใน photoURL ครับ (นี่เป็นแบบจำลอง Base64 สำหรับ Prototype) */
+        }
+
+        // สั่ง Firebase อัปเดตข้อมูล
+        updateProfile(activeUser, profileUpdates).then(() => {
+            alert(translations[currentLang].saveSuccess);
+            
+            // อัปเดตหน้า Home ให้แสดงข้อมูลใหม่ทันที
+            document.getElementById('home-display-name').textContent = newDisplayName;
+            if (tempPhotoDataURL) document.getElementById('home-profile-pic').src = tempPhotoDataURL;
+            
+            navigate('page-home'); // กลับไปหน้าโฮม
+        }).catch((error) => {
+            alert("Error updating profile: " + error.message);
+        });
+    });
+
+
+    // --- จัดการฟอร์ม Login / Sign up ---
     document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
         if (currentAuthMode === 'login') {
-            // ทำการเข้าสู่ระบบ
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(() => {
                     alert("เข้าสู่ระบบสำเร็จ!");
                     navigate('page-home'); 
-                })
-                .catch((error) => {
-                    alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง");
-                });
+                }).catch(() => alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง"));
         } else {
-            // ทำการสมัครสมาชิก
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    alert("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ Binpoint");
+                .then(() => {
+                    alert("สมัครสมาชิกสำเร็จ!");
                     navigate('page-home'); 
-                })
-                .catch((error) => {
-                    alert("เกิดข้อผิดพลาดในการสมัคร: " + error.message);
-                });
+                }).catch((error) => alert("เกิดข้อผิดพลาด: " + error.message));
         }
     });
 
     // --- ระบบเปลี่ยนหน้า (Navigation) ---
     window.navigate = function(targetPageId) {
-        document.querySelectorAll('.page').forEach(page => {
-            page.classList.remove('active', 'page-flex');
-        });
-        
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active', 'page-flex'));
         const targetPage = document.getElementById(targetPageId);
-        if (targetPageId === 'page-splash') {
-            targetPage.classList.add('active', 'page-flex'); 
-        } else {
-            targetPage.classList.add('active');
-        }
+        
+        if (targetPageId === 'page-splash') targetPage.classList.add('active', 'page-flex'); 
+        else targetPage.classList.add('active');
 
         const bottomNav = document.getElementById('bottom-nav');
-        if (targetPageId === 'page-splash' || targetPageId === 'page-signup') {
+        // ซ่อนแถบเมนูด้านล่างหากอยู่หน้า Splash, หน้าล็อกอิน, หรือ "หน้าแก้โปรไฟล์"
+        if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile') {
             bottomNav.classList.add('hidden');
         } else {
             bottomNav.classList.remove('hidden');
@@ -497,40 +517,23 @@
         }
     };
 
-    // --- ฟังก์ชันอัปเดตสีปุ่มเมนูด้านล่าง ---
     function updateBottomNavUI(activePageId) {
         document.querySelectorAll('#bottom-nav .nav-item').forEach(item => {
-            const iconBg = item.querySelector('.icon-bg');
-            const navText = item.querySelector('.nav-text');
-            
             item.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300';
-            iconBg.className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg';
-            navText.className = 'text-xs mt-1 nav-text group-hover:text-white';
+            item.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg';
+            item.querySelector('.nav-text').className = 'text-xs mt-1 nav-text group-hover:text-white';
         });
 
-        let activeNavId = '';
-        if (activePageId === 'page-home') activeNavId = 'nav-home';
-        if (activePageId === 'page-history') activeNavId = 'nav-history';
-        if (activePageId === 'page-rewards') activeNavId = 'nav-rewards';
-        if (activePageId === 'page-setting') activeNavId = 'nav-setting';
-
-        if (activeNavId) {
-            const activeNav = document.getElementById(activeNavId);
-            const iconBg = activeNav.querySelector('.icon-bg');
-            const navText = activeNav.querySelector('.nav-text');
-
+        const navMap = { 'page-home': 'nav-home', 'page-history': 'nav-history', 'page-rewards': 'nav-rewards', 'page-setting': 'nav-setting' };
+        if (navMap[activePageId]) {
+            const activeNav = document.getElementById(navMap[activePageId]);
             activeNav.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group';
-            iconBg.className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]';
-            navText.className = 'text-xs mt-1 font-semibold nav-text text-white';
+            activeNav.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]';
+            activeNav.querySelector('.nav-text').className = 'text-xs mt-1 font-semibold nav-text text-white';
         }
     }
 
-    // --- ข้ามหน้า Splash Screen อัตโนมัติ ---
-    setTimeout(() => {
-        if(document.getElementById('page-splash').classList.contains('active')) {
-            navigate('page-signup');
-        }
-    }, 3000);
+    setTimeout(() => { if(document.getElementById('page-splash').classList.contains('active')) navigate('page-signup'); }, 3000);
 
 </script>
 
