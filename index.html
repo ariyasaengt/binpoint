@@ -11,8 +11,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f3f4f6;
         }
-        .mobile-container {
-            max-width: 400px;
+        /* กำหนดให้ Container หลักยืดหยุ่นตามหน้าจอ */
+        .app-container {
+            max-width: 100%;
             margin: 0 auto;
             background: linear-gradient(135deg, #eaffea 0%, #d3f3d3 100%);
             min-height: 100vh;
@@ -22,51 +23,63 @@
             display: flex;
             flex-direction: column;
         }
+        @media (min-width: 640px) {
+            .app-container {
+                max-width: 450px; /* จำกัดความกว้างเมื่อเปิดบนคอมพิวเตอร์ให้ดูคล้ายมือถือ */
+            }
+        }
         .page {
             display: none; /* ซ่อนทุกหน้าไว้ก่อน */
             width: 100%;
             min-height: 100vh;
-            padding-bottom: 90px; /* เผื่อที่ให้ Bottom Nav */
+            padding-bottom: 90px;
         }
         .page.active {
             display: block; /* แสดงเฉพาะหน้าที่ active */
+        }
+        .page-flex.active {
+            display: flex; /* ใช้กับหน้าที่ต้องการจัดเรียงแบบ flex เช่น Splash screen */
         }
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-200 flex justify-center">
 
-<div class="mobile-container" id="app-container">
+<div class="app-container" id="app-container">
 
-    <!-- ================= 1. SPLASH SCREEN (1.jpg) ================= -->
-    <div id="page-splash" class="page active flex flex-col items-center justify-center bg-[#f0fdf4]" style="padding-bottom: 0;">
-        <div class="flex items-center space-x-3 mb-10">
-            <div class="w-16 h-16 rounded-full bg-orange-400 flex items-center justify-center text-white text-3xl shadow-lg">
-                <i class="fa-solid fa-trash-can"></i>
+    <!-- ================= 1. SPLASH SCREEN (Responsive) ================= -->
+    <div id="page-splash" class="page page-flex active flex-col bg-green-50" style="padding-bottom: 0; min-height: 100vh;">
+        <header class="p-6 sm:p-10 flex items-start gap-4 w-full">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                <i class="fa-solid fa-trash-can text-white text-3xl sm:text-4xl"></i>
             </div>
             <div>
-                <h1 class="text-5xl font-bold text-[#1b3a24]">Binpoint</h1>
-                <p class="text-xs text-[#1b3a24] mt-1 font-semibold">Every point counts, every reward matters.</p>
+                <h1 class="font-bold text-4xl text-gray-900">Binpoint</h1>
+                <p class="text-sm sm:text-base text-gray-700 font-semibold mt-1">Every point counts, every reward matters.</p>
             </div>
-        </div>
-        <!-- 3D Bin Placeholder -->
-        <div class="mt-10">
-            <i class="fa-solid fa-recycle text-[120px] text-green-500 drop-shadow-2xl"></i>
-        </div>
-        <p class="mt-10 text-sm text-gray-500 animate-pulse cursor-pointer" onclick="navigate('page-signup')">Tap to continue...</p>
+        </header>
+        <main class="grow flex items-center justify-center p-6 w-full cursor-pointer" onclick="navigate('page-signup')">
+            <div class="w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center rounded-3xl p-6 transition-transform hover:scale-105">
+                <i class="fa-solid fa-recycle text-green-500 text-[10rem] sm:text-[14rem] drop-shadow-2xl"></i>
+            </div>
+        </main>
+        <footer class="p-10 flex items-center justify-center w-full cursor-pointer" onclick="navigate('page-signup')">
+            <p class="text-sm sm:text-base text-gray-500 text-center animate-pulse">Tap to continue...</p>
+        </footer>
     </div>
 
-    <!-- ================= 2. SIGN UP SCREEN (2.jpg) ================= -->
+    <!-- ================= 2. SIGN UP / LOGIN SCREEN ================= -->
     <div id="page-signup" class="page bg-gradient-to-b from-[#1b3a24] via-[#d3f3d3] to-[#eaffea]" style="padding-bottom: 0; padding: 20px;">
-        <div class="text-right text-white font-bold text-sm mt-4 mr-2">EN | TH</div>
-        <h1 class="text-center text-4xl font-bold text-white mt-6 mb-12">Welcome</h1>
+        <div class="text-right text-white font-bold text-sm mt-4 mr-2 cursor-pointer">EN | TH</div>
+        <h1 class="text-center text-4xl font-bold text-white mt-6 mb-10">Welcome</h1>
 
         <div class="bg-[#e4f5ca] rounded-[2rem] p-8 shadow-lg">
-            <h2 class="text-3xl font-bold text-center text-[#1b3a24] mb-6">Sign up</h2>
-            <form id="signup-form" class="space-y-4">
-                <input type="text" id="username" placeholder="Username" required class="w-full px-4 py-3 rounded-full outline-none shadow-sm">
+            <!-- ปรับหัวข้อให้ครอบคลุมการเข้าสู่ระบบ -->
+            <h2 class="text-3xl font-bold text-center text-[#1b3a24] mb-6">Login / Sign up</h2>
+            <form id="auth-form" class="space-y-4">
+                <input type="text" id="username" placeholder="Username (สำหรับสมัครใหม่)" class="w-full px-4 py-3 rounded-full outline-none shadow-sm">
                 <input type="email" id="email" placeholder="Gmail" required class="w-full px-4 py-3 rounded-full outline-none shadow-sm">
                 <input type="password" id="password" placeholder="Password" required class="w-full px-4 py-3 rounded-full outline-none shadow-sm">
                 
@@ -74,31 +87,31 @@
                     <input type="checkbox" id="terms" required class="w-4 h-4 text-green-600 rounded focus:ring-green-500">
                     <label for="terms" class="ml-2 text-sm font-bold text-[#1b3a24]">ยอมรับข้อกำหนดและเงื่อนไข</label>
                 </div>
-                <button type="submit" class="w-full bg-[#1b3a24] text-white font-bold py-3 rounded-full shadow-md hover:bg-green-900 transition">Sign up</button>
+                <button type="submit" class="w-full bg-[#1b3a24] text-white font-bold py-3 rounded-full shadow-md hover:bg-green-900 transition">
+                    Continue to Binpoint
+                </button>
             </form>
         </div>
 
         <div class="flex justify-between mt-8 space-x-4 px-2">
-            <button class="flex-1 bg-white flex items-center justify-center py-3 rounded-full shadow-md font-semibold">
+            <button class="flex-1 bg-white flex items-center justify-center py-3 rounded-full shadow-md font-semibold text-gray-600 hover:bg-gray-50 transition">
                 <i class="fa-brands fa-google text-red-500 mr-2"></i> Google
             </button>
-            <button class="flex-1 bg-white flex items-center justify-center py-3 rounded-full shadow-md font-semibold">
+            <button class="flex-1 bg-white flex items-center justify-center py-3 rounded-full shadow-md font-semibold text-gray-600 hover:bg-gray-50 transition">
                 <i class="fa-brands fa-facebook text-blue-600 mr-2"></i> Facebook
             </button>
         </div>
     </div>
 
-    <!-- ================= 3. HOME SCREEN (3.jpg) ================= -->
+    <!-- ================= 3. HOME SCREEN ================= -->
     <div id="page-home" class="page">
-        <!-- Header -->
         <div class="flex items-center p-6 pt-10">
-            <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white"><img src="https://via.placeholder.com/150" class="w-full h-full object-cover"></div>
+            <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white shadow-sm"><img src="https://via.placeholder.com/150" class="w-full h-full object-cover"></div>
             <div class="ml-4">
-                <h1 class="text-xl font-bold text-gray-800">หมูเด้งเด้งเองจ้า</h1>
-                <p class="text-sm text-gray-500">Profile &gt;</p>
+                <h1 class="text-xl font-bold text-gray-800" id="user-display-name">หมูเด้งเด้งเองจ้า</h1>
+                <p class="text-sm text-gray-500 cursor-pointer">Profile &gt;</p>
             </div>
         </div>
-        <!-- Points Card -->
         <div class="mx-5 bg-white rounded-2xl p-4 shadow-sm flex items-center">
             <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl"><i class="fa-solid fa-trash-can"></i></div>
             <div class="ml-4">
@@ -108,26 +121,23 @@
                 <p class="text-xs text-gray-500">Collect more to redeem rewards.</p>
             </div>
         </div>
-        <!-- Banner -->
         <div class="mx-5 mt-6 relative rounded-2xl overflow-hidden bg-green-500 shadow-md p-5 text-white">
             <h2 class="text-3xl font-black italic">BINPOINT</h2>
             <p class="font-bold text-sm mt-1">Every point counts<br>every reward matters</p>
-            <p class="text-[10px] mt-2 bg-green-600 inline-block px-2 py-1 rounded">สะสมพอยต์เพื่อแลกของรางวัลหรือคูปองร้านค้าที่ร่วมรายการ...</p>
+            <p class="text-[10px] mt-2 bg-green-600 inline-block px-2 py-1 rounded">สะสมพอยต์เพื่อแลกของรางวัลหรือคูปองร้านค้าที่ร่วมรายการ</p>
         </div>
-        <!-- Stores -->
         <div class="mt-6 mx-5">
             <h3 class="text-md font-bold text-gray-800 mb-3">Participating stores</h3>
             <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700"><i class="fa-solid fa-location-dot"></i></div><p class="text-xs font-bold text-center mt-2">Near you</p></div>
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-xs text-center leading-tight">BREW<br>BLISS</div><p class="text-xs font-bold text-center mt-2">Brew Bliss</p></div>
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-xs text-center leading-tight">Mini<br>MART</div><p class="text-xs font-bold text-center mt-2">Mini Mart</p></div>
+                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700"><i class="fa-solid fa-location-dot"></i></div><p class="text-xs font-bold text-center mt-2 text-gray-800">Near you</p></div>
+                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-[10px] text-center leading-tight">BREW<br>BLISS</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Brew Bliss</p></div>
+                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-[10px] text-center leading-tight">Mini<br>MART</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Mini Mart</p></div>
             </div>
         </div>
     </div>
 
-    <!-- ================= 4. HISTORY / POINT SCREEN (4.jpg) ================= -->
+    <!-- ================= 4. HISTORY / POINT SCREEN ================= -->
     <div id="page-history" class="page">
-        <!-- Header -->
         <div class="flex items-center p-6 pt-10">
             <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white"><img src="https://via.placeholder.com/150" class="w-full h-full object-cover"></div>
             <div class="ml-4">
@@ -135,12 +145,10 @@
                 <p class="text-sm text-gray-500">Profile &gt;</p>
             </div>
         </div>
-        <!-- Points Card -->
         <div class="mx-5 mb-6 bg-white rounded-2xl p-4 shadow-sm flex items-center">
             <div class="w-10 h-10 rounded-full bg-orange-400 flex items-center justify-center text-white text-lg"><i class="fa-solid fa-trash-can"></i></div>
             <div class="ml-4"><span class="text-xl font-bold text-gray-800">555 POINT</span><p class="text-xs text-gray-500">Collect more to redeem rewards.</p></div>
         </div>
-        <!-- History List -->
         <div class="mx-5 space-y-3">
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center"><div class="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center text-sm mr-3"><i class="fa-solid fa-trash-can"></i></div>
@@ -152,21 +160,14 @@
                 <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">29/04/2024</p></div></div>
                 <div class="font-bold text-green-600">+67 POINT</div>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center"><div class="w-8 h-8 rounded-full bg-orange-400 text-white flex items-center justify-center text-sm mr-3"><i class="fa-solid fa-trash-can"></i></div>
-                <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">16/04/2024</p></div></div>
-                <div class="font-bold text-green-600">+99 POINT</div>
-            </div>
         </div>
-        <!-- Button -->
         <div class="mx-5 mt-8">
-            <button class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-xl shadow-md text-lg">Send an image</button>
+            <button class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-xl shadow-md text-lg hover:bg-green-900 transition">Send an image</button>
         </div>
     </div>
 
-    <!-- ================= 5. REWARDS SCREEN (5.jpg) ================= -->
+    <!-- ================= 5. REWARDS SCREEN ================= -->
     <div id="page-rewards" class="page">
-        <!-- Header -->
         <div class="flex items-center p-6 pt-10">
             <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white"><img src="https://via.placeholder.com/150" class="w-full h-full object-cover"></div>
             <div class="ml-4">
@@ -174,25 +175,21 @@
                 <p class="text-sm text-gray-500">Profile &gt;</p>
             </div>
         </div>
-        <!-- Points Card -->
         <div class="mx-5 mb-6 bg-white rounded-2xl p-4 shadow-sm flex items-center">
             <div class="w-10 h-10 rounded-full bg-orange-400 flex items-center justify-center text-white text-lg"><i class="fa-solid fa-trash-can"></i></div>
             <div class="ml-4"><span class="text-xl font-bold text-gray-800">555 POINT</span><p class="text-xs text-gray-500">Collect more to redeem rewards.</p></div>
         </div>
-        <!-- Reward Items Grid -->
         <div class="mx-5 grid grid-cols-2 gap-4">
-            <!-- Item 1 -->
             <div class="flex flex-col items-center">
                 <div class="bg-white rounded-2xl p-4 shadow-sm w-full aspect-square flex items-center justify-center">
-                    <i class="fa-solid fa-bag-shopping text-6xl text-gray-300"></i> <!-- Placeholder for Tote Bag -->
+                    <i class="fa-solid fa-bag-shopping text-6xl text-gray-300"></i>
                 </div>
                 <p class="text-xs font-bold mt-2 text-gray-700">You need 1,999 points</p>
                 <h3 class="text-lg font-black text-[#1b3a24]">Bag</h3>
             </div>
-            <!-- Item 2 -->
             <div class="flex flex-col items-center">
                 <div class="bg-white rounded-2xl p-4 shadow-sm w-full aspect-square flex items-center justify-center">
-                    <i class="fa-solid fa-suitcase text-6xl text-amber-700"></i> <!-- Placeholder for Jute Bag -->
+                    <i class="fa-solid fa-suitcase text-6xl text-amber-700"></i>
                 </div>
                 <p class="text-xs font-bold mt-2 text-gray-700">You need 8,000 points</p>
                 <h3 class="text-lg font-black text-[#1b3a24]">Bag</h3>
@@ -201,7 +198,6 @@
     </div>
 
     <!-- ================= BOTTOM NAVIGATION ================= -->
-    <!-- แถบเมนูด้านล่าง จะแสดงเฉพาะหน้า Home, History, Rewards -->
     <div id="bottom-nav" class="absolute bottom-0 w-full bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] hidden">
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item" onclick="navigate('page-home')" id="nav-home">
             <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-house"></i></div>
@@ -223,12 +219,13 @@
 
 </div>
 
-<!-- Scripts สำหรับควบคุมหน้าจอและ Firebase -->
+<!-- ================= SCRIPTS ================= -->
 <script type="module">
-    // --- การเชื่อมต่อ Firebase ตามที่คุณให้มา ---
+    // นำเข้า Firebase และโมดูลที่เกี่ยวข้องกับการเข้าสู่ระบบ (Auth)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    // ตั้งค่า Firebase ตามที่คุณให้มา
     const firebaseConfig = {
         apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
         authDomain: "binpoint-4aa3b.firebaseapp.com",
@@ -242,8 +239,8 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // --- ระบบสมัครสมาชิก ---
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
+    // --- จัดการฟอร์ม Login / Sign up ---
+    document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -251,37 +248,59 @@
 
         if(!terms) return alert("กรุณายอมรับข้อกำหนดและเงื่อนไข");
 
-        createUserWithEmailAndPassword(auth, email, password)
+        // ลองทำการ Login (เข้าสู่ระบบ) ก่อน
+        signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                alert("สมัครสมาชิกสำเร็จ!");
-                navigate('page-home'); // สมัครเสร็จให้เด้งไปหน้า Home
+                // หากอีเมลและรหัสผ่านถูกต้อง ล็อกอินสำเร็จ -> ไปหน้า Home
+                alert("เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับกลับมา");
+                navigate('page-home'); 
             })
             .catch((error) => {
-                alert("เกิดข้อผิดพลาด: " + error.message);
+                // หากเกิดข้อผิดพลาด (เช่น ไม่มีบัญชีนี้ในระบบ) ให้ทำการสมัครสมาชิกใหม่
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+                    createUserWithEmailAndPassword(auth, email, password)
+                        .then((userCredential) => {
+                            // สมัครสมาชิกสำเร็จ -> ไปหน้า Home
+                            alert("สมัครสมาชิกสำเร็จ! เริ่มใช้งาน Binpoint ได้เลย");
+                            navigate('page-home'); 
+                        })
+                        .catch((signUpError) => {
+                            alert("เกิดข้อผิดพลาดในการสมัครสมาชิก: " + signUpError.message);
+                        });
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + error.message);
+                }
             });
     });
 
-    // --- ระบบนำทาง (Navigation System) สลับหน้าจอ ---
+    // --- ระบบควบคุมการเปลี่ยนหน้า (Navigation System) ---
     window.navigate = function(targetPageId) {
         // ซ่อนทุกหน้า
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+            page.classList.remove('page-flex'); // ลบ class flex เผื่อไว้
+        });
         
         // แสดงหน้าที่ต้องการ
-        document.getElementById(targetPageId).classList.add('active');
+        const targetPage = document.getElementById(targetPageId);
+        if (targetPageId === 'page-splash') {
+            targetPage.classList.add('active', 'page-flex'); 
+        } else {
+            targetPage.classList.add('active');
+        }
 
-        // จัดการแสดงผล Bottom Navigation
+        // แสดง/ซ่อน เมนูด้านล่าง (Bottom Nav)
         const bottomNav = document.getElementById('bottom-nav');
         if (targetPageId === 'page-splash' || targetPageId === 'page-signup') {
-            bottomNav.classList.add('hidden'); // ซ่อนเมนูในหน้าแรกๆ
+            bottomNav.classList.add('hidden'); // ซ่อนในหน้าแรกและหน้าล็อกอิน
         } else {
-            bottomNav.classList.remove('hidden'); // แสดงเมนูในหน้าหลัก
+            bottomNav.classList.remove('hidden'); // แสดงในหน้าเนื้อหาด้านใน
             updateBottomNavUI(targetPageId);
         }
     };
 
-    // --- อัปเดตสีของปุ่มเมนูด้านล่าง (Active State) ---
+    // --- อัปเดตสีปุ่มเมนูด้านล่างให้ตรงกับหน้าที่เปิดอยู่ ---
     function updateBottomNavUI(activePage) {
-        // รีเซ็ตทุกปุ่มให้เป็นสีขาว/พื้นใส
         document.querySelectorAll('.icon-bg').forEach(bg => {
             bg.classList.remove('bg-[#eaffea]', 'text-[#1b3a24]', 'shadow-md', 'relative', 'top-[-10px]');
             bg.classList.add('text-white');
@@ -300,12 +319,12 @@
         }
     }
 
-    // ตั้งเวลาให้หน้า Splash Screen เปลี่ยนไปหน้า Sign up อัตโนมัติหลัง 3 วินาที
+    // ข้ามหน้า Splash Screen อัตโนมัติหลัง 3.5 วินาที
     setTimeout(() => {
         if(document.getElementById('page-splash').classList.contains('active')) {
             navigate('page-signup');
         }
-    }, 3000);
+    }, 3500);
 
 </script>
 
