@@ -1,450 +1,5 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binpoint App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #374151;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .app-container {
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #eaffea 0%, #d3f3d3 100%);
-            position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (min-width: 640px) {
-            .app-container {
-                max-width: 400px;
-                height: 90vh;
-                border-radius: 2.5rem;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                border: 8px solid #1f2937;
-            }
-        }
-        
-        .page {
-            display: none;
-            width: 100%;
-            min-height: 100%;
-            padding-bottom: 90px;
-        }
-        .page.active { display: block; }
-        .page-flex.active { display: flex; }
-        
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .lang-active { color: #facc15; text-decoration: underline; }
-    </style>
-</head>
-<body>
-
-<div class="app-container" id="app-container">
-
-    <!-- ================= 1. หน้าเริ่มต้น (Splash Screen) ================= -->
-    <div id="page-splash" class="page page-flex active flex-col bg-green-50 justify-between items-center py-10" style="padding-bottom: 0;">
-        <header class="flex items-start gap-4 w-full px-8 mt-10">
-            <div class="w-16 h-16 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <i class="fa-solid fa-trash-can text-white text-3xl"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-4xl text-gray-900">Binpoint</h1>
-                <p class="text-sm text-gray-700 font-semibold mt-1" data-i18n="slogan">Every point counts, every reward matters.</p>
-            </div>
-        </header>
-        <main class="grow flex items-center justify-center w-full cursor-pointer" onclick="navigate('page-signup')">
-            <i class="fa-solid fa-recycle text-green-500 text-[10rem] drop-shadow-2xl transition-transform hover:scale-105"></i>
-        </main>
-        <footer class="w-full pb-10 cursor-pointer" onclick="navigate('page-signup')">
-            <p class="text-sm text-gray-500 text-center animate-pulse" data-i18n="tapContinue">Tap to continue...</p>
-        </footer>
-    </div>
-
-    <!-- ================= 2. หน้าล็อกอิน / สมัครสมาชิก (Auth) ================= -->
-    <div id="page-signup" class="page bg-gradient-to-b from-[#4a6b53] via-[#85a889] to-[#e4f5ca]" style="padding: 20px 20px 0 20px;">
-        <div class="text-right text-white font-bold text-sm mt-4 mr-2 cursor-pointer">
-            <span id="btn-en" class="lang-active" onclick="setLanguage('en')">EN</span> | 
-            <span id="btn-th" class="" onclick="setLanguage('th')">TH</span>
-        </div>
-        
-        <h1 class="text-center text-4xl font-bold text-white mt-8 mb-10 drop-shadow-md" data-i18n="welcome">Welcome</h1>
-
-        <div class="bg-[#e4f5ca] rounded-[2rem] p-8 shadow-lg mt-4">
-            <div class="flex justify-center space-x-6 mb-6">
-                <button type="button" id="tab-login" class="text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all" onclick="setAuthMode('login')" data-i18n="tabLogin">Login</button>
-                <button type="button" id="tab-signup" class="text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all" onclick="setAuthMode('signup')" data-i18n="tabSignup">Sign up</button>
-            </div>
-
-            <form id="auth-form" class="space-y-5">
-                <div id="field-username" class="hidden">
-                    <input type="text" id="username" data-i18n="phUsername" placeholder="Username (for new user)" class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
-                </div>
-                <input type="email" id="email" data-i18n="phEmail" placeholder="Email (Gmail)" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
-                <input type="password" id="password" data-i18n="phPassword" placeholder="Password" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
-                
-                <div id="field-terms" class="flex items-center pl-2 pt-2 hidden">
-                    <input type="checkbox" id="terms" class="w-4 h-4 text-[#1b3a24] rounded focus:ring-green-500">
-                    <label for="terms" class="ml-2 text-sm font-bold text-[#1b3a24]" data-i18n="terms">I accept the terms and conditions</label>
-                </div>
-                
-                <button type="submit" id="btn-submit" class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-full shadow-md hover:bg-green-900 transition mt-4 text-lg" data-i18n="btnLogin">
-                    Login
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ================= 3. หน้าโฮม (Home) ================= -->
-    <div id="page-home" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="flex items-center p-6 pt-10 cursor-pointer hover:bg-green-100 transition rounded-b-3xl" onclick="navigate('page-profile')">
-            <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
-                <img id="home-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
-            </div>
-            <div class="ml-4 truncate">
-                <h1 id="home-display-name" class="text-xl font-bold text-gray-800 truncate">New User</h1>
-                <p class="text-sm text-gray-500" data-i18n="profile">Profile &gt;</p>
-            </div>
-        </div>
-
-        <div class="mx-5 bg-white rounded-2xl p-4 shadow-sm flex items-center">
-            <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
-                <i class="fa-solid fa-trash-can"></i>
-            </div>
-            <div class="ml-4">
-                <div class="flex items-baseline">
-                    <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
-                    <span class="text-2xl font-bold text-gray-800">555</span>
-                    <span class="text-lg font-bold text-gray-800 ml-1" data-i18n="points">points</span>
-                </div>
-                <p class="text-xs text-gray-500" data-i18n="collectMore">Collect more to redeem rewards.</p>
-            </div>
-        </div>
-        <div class="mx-5 mt-6 relative rounded-2xl overflow-hidden bg-green-500 shadow-md p-5 text-white">
-            <h2 class="text-3xl font-black italic">BINPOINT</h2>
-            <p class="font-bold text-sm mt-1" data-i18n="slogan2">Every point counts<br>every reward matters</p>
-            <p class="text-[10px] mt-2 bg-green-600 inline-block px-2 py-1 rounded" data-i18n="bannerText">Collect points to redeem rewards or store coupons</p>
-        </div>
-        <div class="mt-6 mx-5">
-            <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="participating">Participating stores</h3>
-            <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700"><i class="fa-solid fa-location-dot"></i></div><p class="text-xs font-bold text-center mt-2 text-gray-800" data-i18n="nearYou">Near you</p></div>
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-[10px] text-center leading-tight">BREW<br>BLISS</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Brew Bliss</p></div>
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-[10px] text-center leading-tight">Mini<br>MART</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Mini Mart</p></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 4. หน้าโปรไฟล์ (Profile / Edit) ================= -->
-    <div id="page-profile" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="p-6 pt-10 flex items-center">
-            <i class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-4 text-gray-800" onclick="navigate('page-home')"></i>
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="editProfile">Edit Profile</h1>
-        </div>
-        
-        <div class="mx-5 flex flex-col items-center mt-4">
-            <div class="relative w-36 h-36 rounded-full bg-gray-300 overflow-hidden border-4 border-white shadow-lg mb-6 group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
-                <img id="edit-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover transition duration-300 group-hover:brightness-50">
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-30">
-                    <i class="fa-solid fa-camera text-white text-3xl"></i>
-                </div>
-            </div>
-            <!-- ยอมรับเฉพาะไฟล์รูปภาพ -->
-            <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="previewAndCompressImage(event)">
-            
-            <div class="w-full bg-white p-6 rounded-[2rem] shadow-sm">
-                <label class="block text-sm font-bold text-gray-700 mb-2 pl-2" data-i18n="displayName">Display Name</label>
-                <input type="text" id="edit-display-name" class="w-full px-5 py-3.5 rounded-full border-2 border-gray-100 outline-none focus:border-green-400 focus:bg-green-50 transition mb-8 text-gray-800 font-medium">
-                
-                <button id="btn-save-profile" class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-full shadow-md hover:bg-green-900 transition text-lg flex justify-center items-center">
-                    <span data-i18n="saveChanges">Save Changes</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 5. หน้าประวัติ / พอยต์ (History / Point) ================= -->
-    <div id="page-history" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="p-6 pt-10">
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="pointHistory">Point History</h1>
-            <p class="text-sm text-gray-500" data-i18n="historyDesc">See how you earned your points</p>
-        </div>
-        <div class="mx-5 mb-6 bg-white rounded-2xl p-4 shadow-sm flex items-center">
-            <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
-                <i class="fa-solid fa-trash-can"></i>
-            </div>
-            <div class="ml-4">
-                <span class="text-2xl font-bold text-gray-800">555 <span class="text-lg">POINT</span></span>
-            </div>
-        </div>
-        <div class="mx-5 space-y-3">
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-bottle-water"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="recyclePlastic">Recycled Plastic</p><p class="text-xs text-gray-400">Today, 10:30 AM</p></div>
-                </div>
-                <div class="font-bold text-green-600">+133</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 6. หน้ารางวัล (Rewards) ================= -->
-    <div id="page-rewards" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="p-6 pt-10">
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
-        </div>
-        <div class="mx-5 grid grid-cols-2 gap-4">
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
-                <div class="w-20 h-20 mb-2 flex items-center justify-center bg-blue-50 rounded-full"><i class="fa-solid fa-shirt text-4xl text-blue-400"></i></div>
-                <h3 class="text-md font-bold text-gray-800 text-center" data-i18n="itemShirt">Eco T-Shirt</h3>
-                <p class="text-sm font-bold mt-1 text-orange-500">2,000 pts</p>
-                <button class="mt-3 w-full bg-green-500 text-white text-xs font-bold py-2 rounded-full hover:bg-green-600" data-i18n="btnRedeem">Redeem</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 7. หน้าตั้งค่า (Setting) ================= -->
-    <div id="page-setting" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="p-6 pt-10">
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="settings">Settings</h1>
-        </div>
-        <div class="mx-5 space-y-4">
-            <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer" onclick="navigate('page-profile')">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-user text-gray-500 text-lg w-8 text-center"></i>
-                    <span class="ml-2 font-bold text-gray-700" data-i18n="editProfile">Edit Profile</span>
-                </div>
-                <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
-            </div>
-            
-            <button onclick="navigate('page-signup')" class="w-full mt-8 bg-red-100 text-red-600 font-bold py-4 rounded-xl shadow-sm text-md hover:bg-red-200 transition" data-i18n="btnLogout">
-                Log Out
-            </button>
-        </div>
-    </div>
-
-
-    <!-- ================= เมนูด้านล่าง (Bottom Navigation) ================= -->
-    <div id="bottom-nav" class="absolute bottom-0 w-full bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
-        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group" onclick="navigate('page-home')" id="nav-home">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]"><i class="fa-solid fa-house"></i></div>
-            <span class="text-xs mt-1 font-semibold nav-text text-white" data-i18n="navHome">Home</span>
-        </div>
-        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-history')" id="nav-history">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-regular fa-trash-can"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navPoint">Point</span>
-        </div>
-        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-rewards')" id="nav-rewards">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gift"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navReward">Reward</span>
-        </div>
-        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-setting')" id="nav-setting">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gear"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navSetting">Setting</span>
-        </div>
-    </div>
-
-</div>
-
-<!-- ================= สคริปต์การทำงาน ================= -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    // นำเข้า Firestore 
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
-        authDomain: "binpoint-4aa3b.firebaseapp.com",
-        projectId: "binpoint-4aa3b",
-        storageBucket: "binpoint-4aa3b.firebasestorage.app",
-        messagingSenderId: "722642622572",
-        appId: "1:722642622572:web:331a3e900b8479eec42049",
-        measurementId: "G-YN33JVCMBX"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    // เปิดใช้งาน Firestore
-    const db = getFirestore(app);
-
-    let currentAuthMode = 'login'; 
-    let activeUser = null; 
-    let tempPhotoDataURL = null; 
-
-    const translations = {
-        en: {
-            slogan: "Every point counts, every reward matters.",
-            slogan2: "Every point counts<br>every reward matters",
-            tapContinue: "Tap to continue...",
-            welcome: "Welcome",
-            tabLogin: "Login",
-            tabSignup: "Sign up",
-            phUsername: "Username (for new user)",
-            phEmail: "Email (Gmail)",
-            phPassword: "Password",
-            terms: "I accept the terms and conditions",
-            btnLogin: "Login",
-            btnSignup: "Sign up",
-            profile: "Profile &gt;",
-            youHave: "You have",
-            points: "points",
-            collectMore: "Collect more to redeem rewards.",
-            bannerText: "Collect points to redeem rewards or store coupons",
-            participating: "Participating stores",
-            nearYou: "Near you",
-            navHome: "Home",
-            navPoint: "Point",
-            navReward: "Reward",
-            navSetting: "Setting",
-            pointHistory: "Point History",
-            historyDesc: "See how you earned your points",
-            recyclePlastic: "Recycled Plastic",
-            rewards: "Rewards",
-            itemShirt: "Eco T-Shirt",
-            btnRedeem: "Redeem",
-            settings: "Settings",
-            btnLogout: "Log Out",
-            editProfile: "Edit Profile",
-            displayName: "Display Name",
-            saveChanges: "Save Changes",
-            saveSuccess: "Profile updated successfully!",
-            saving: "Saving..."
-        },
-        th: {
-            slogan: "ทุกคะแนนมีความหมาย ทุกรางวัลมีค่า",
-            slogan2: "ทุกคะแนนมีความหมาย<br>ทุกรางวัลมีค่า",
-            tapContinue: "แตะเพื่อดำเนินการต่อ...",
-            welcome: "ยินดีต้อนรับ",
-            tabLogin: "เข้าสู่ระบบ",
-            tabSignup: "สมัครสมาชิก",
-            phUsername: "ชื่อผู้ใช้ (สำหรับสมัครใหม่)",
-            phEmail: "อีเมล (Gmail)",
-            phPassword: "รหัสผ่าน",
-            terms: "ยอมรับข้อกำหนดและเงื่อนไข",
-            btnLogin: "เข้าสู่ระบบ",
-            btnSignup: "สมัครสมาชิก",
-            profile: "โปรไฟล์ &gt;",
-            youHave: "คุณมี",
-            points: "คะแนน",
-            collectMore: "สะสมเพิ่มเติมเพื่อแลกของรางวัล",
-            bannerText: "สะสมพอยต์เพื่อแลกของรางวัลหรือคูปองร้านค้าที่ร่วมรายการ",
-            participating: "ร้านค้าที่ร่วมรายการ",
-            nearYou: "ใกล้คุณ",
-            navHome: "หน้าแรก",
-            navPoint: "พอยต์",
-            navReward: "รางวัล",
-            navSetting: "ตั้งค่า",
-            pointHistory: "ประวัติคะแนน",
-            historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
-            recyclePlastic: "รีไซเคิลพลาสติก",
-            rewards: "ของรางวัล",
-            itemShirt: "เสื้อยืดรักษ์โลก",
-            btnRedeem: "แลกรางวัล",
-            settings: "การตั้งค่า",
-            btnLogout: "ออกจากระบบ",
-            editProfile: "แก้ไขโปรไฟล์",
-            displayName: "ชื่อที่แสดง",
-            saveChanges: "บันทึกการเปลี่ยนแปลง",
-            saveSuccess: "อัปเดตโปรไฟล์สำเร็จ!",
-            saving: "กำลังบันทึก..."
-        }
-    };
-
-    window.setLanguage = function(lang) {
-        document.getElementById('btn-en').classList.remove('lang-active');
-        document.getElementById('btn-th').classList.remove('lang-active');
-        document.getElementById(`btn-${lang}`).classList.add('lang-active');
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[lang][key]) {
-                if (el.tagName === 'INPUT') el.placeholder = translations[lang][key];
-                else el.innerHTML = translations[lang][key];
-            }
-        });
-    };
-
-    window.setAuthMode = function(mode) {
-        currentAuthMode = mode;
-        const tabLogin = document.getElementById('tab-login');
-        const tabSignup = document.getElementById('tab-signup');
-        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
-
-        if (mode === 'login') {
-            tabLogin.className = "text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all";
-            tabSignup.className = "text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all";
-            document.getElementById('field-username').classList.add('hidden');
-            document.getElementById('field-terms').classList.add('hidden');
-            document.getElementById('terms').required = false;
-            document.getElementById('btn-submit').setAttribute('data-i18n', 'btnLogin');
-            document.getElementById('btn-submit').innerHTML = translations[currentLang].btnLogin;
-        } else {
-            tabSignup.className = "text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all";
-            tabLogin.className = "text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all";
-            document.getElementById('field-username').classList.remove('hidden');
-            document.getElementById('field-terms').classList.remove('hidden');
-            document.getElementById('terms').required = true;
-            document.getElementById('btn-submit').setAttribute('data-i18n', 'btnSignup');
-            document.getElementById('btn-submit').innerHTML = translations[currentLang].btnSignup;
-        }
-    };
-
-    setLanguage('en');
-    setAuthMode('login');
-
-    // ==========================================
-    // ตรวจสอบล็อกอินและโหลดข้อมูลรูปภาพจาก Firestore
-    // ==========================================
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            activeUser = user;
-            const displayName = user.displayName || (currentAuthMode === 'signup' ? document.getElementById('username').value : "New User");
-            
-            // อัปเดตชื่อก่อน
-            document.getElementById('home-display-name').textContent = displayName;
-            document.getElementById('edit-display-name').value = displayName;
-
-            // ตั้งรูปเริ่มต้น
-            let userPhoto = "https://via.placeholder.com/150"; 
-
-            // ไปค้นหารูปภาพที่บีบอัดแล้วจาก Firestore Database
-            try {
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().profileImage) {
-                    userPhoto = docSnap.data().profileImage;
-                }
-            } catch (error) {
-                console.log("No profile image found in DB, using default.");
-            }
-
-            // แสดงรูปภาพ
-            document.getElementById('home-profile-pic').src = userPhoto;
-            document.getElementById('edit-profile-pic').src = userPhoto;
-
-            if(!user.displayName && document.getElementById('username').value) {
-                 updateProfile(user, { displayName: document.getElementById('username').value });
-            }
-        } else {
-            activeUser = null;
-        }
-    });
-
-    // ==========================================
-    // ฟังก์ชันบีบอัดภาพ (Resize & Compress) 
+// ==========================================
+    // ฟังก์ชันบีบอัดภาพ (ปรับให้เบาขึ้น โหลดไวขึ้น) 
     // ==========================================
     window.previewAndCompressImage = function(event) {
         const file = event.target.files[0];
@@ -457,14 +12,13 @@
             img.src = e.target.result;
             
             img.onload = function() {
-                // สร้าง Canvas เพื่อวาดรูปที่เล็กลง
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 300; // บังคับรูปกว้างสุดแค่ 300px
-                const MAX_HEIGHT = 300;
+                // ปรับขนาดความกว้างสูงสุดให้เล็กลงอีกนิด (200px ก็ชัดพอสำหรับรูปโปรไฟล์แล้วครับ)
+                const MAX_WIDTH = 200; 
+                const MAX_HEIGHT = 200;
                 let width = img.width;
                 let height = img.height;
 
-                // คำนวณสัดส่วนรูปภาพใหม่
                 if (width > height) {
                     if (width > MAX_WIDTH) {
                         height *= MAX_WIDTH / width;
@@ -482,15 +36,15 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // บีบอัดให้เป็น JPG คุณภาพ 70% (เพื่อให้ไฟล์เล็กมากพอจะเซฟลง Database ได้)
-                tempPhotoDataURL = canvas.toDataURL('image/jpeg', 0.7);
+                // บีบอัดคุณภาพรูปเหลือ 60% (ลดขนาดไฟล์ลงเยอะมาก แต่ตาคนมองแทบไม่ออก)
+                tempPhotoDataURL = canvas.toDataURL('image/jpeg', 0.6);
                 document.getElementById('edit-profile-pic').src = tempPhotoDataURL;
             }
         }
     }
 
     // ==========================================
-    // ระบบบันทึกรูปและชื่อลง Firestore & Auth
+    // ระบบบันทึกรูปและชื่อ (เซฟพร้อมกันแบบ Parallel)
     // ==========================================
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
         if (!activeUser) return;
@@ -504,89 +58,42 @@
             btnSave.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> ${translations[currentLang].saving}`;
             btnSave.disabled = true;
 
-            // 1. อัปเดตชื่อลงในระบบ Auth
-            await updateProfile(activeUser, { displayName: newDisplayName });
+            // 1. สร้าง "ตระกร้างาน" เพื่อให้มันทำงานพร้อมกัน ไม่ต้องรอต่อคิว
+            const updateTasks = [];
 
-            // 2. ถ้ายูสเซอร์มีการเลือกรูปภาพใหม่ ให้เซฟรูปลง Firestore
-            if (tempPhotoDataURL) {
-                const userDocRef = doc(db, "users", activeUser.uid);
-                await setDoc(userDocRef, { 
-                    profileImage: tempPhotoDataURL 
-                }, { merge: true }); // merge: true คือการอัปเดตทับเฉพาะ field นี้
+            // ถ้ามีการเปลี่ยนชื่อ ให้เพิ่มงานอัปเดตชื่อลงไป
+            if (activeUser.displayName !== newDisplayName) {
+                updateTasks.push(updateProfile(activeUser, { displayName: newDisplayName }));
             }
 
-            alert(translations[currentLang].saveSuccess);
-            
-            // อัปเดตหน้าจอ
+            // ถ้ามีการอัปโหลดรูปใหม่ ให้เพิ่มงานเซฟรูปลง Firestore ไปด้วย
+            if (tempPhotoDataURL) {
+                const userDocRef = doc(db, "users", activeUser.uid);
+                updateTasks.push(setDoc(userDocRef, { profileImage: tempPhotoDataURL }, { merge: true }));
+            }
+
+            // 2. สั่งยิงข้อมูลทุกอย่าง "พร้อมกัน" (ประหยัดเวลาไปได้ 50%)
+            if (updateTasks.length > 0) {
+                await Promise.all(updateTasks);
+            }
+
+            // 3. อัปเดตหน้าจอทันที
             document.getElementById('home-display-name').textContent = newDisplayName;
             if (tempPhotoDataURL) {
                 document.getElementById('home-profile-pic').src = tempPhotoDataURL;
             }
+            
+            // ล้างค่ารูปชั่วคราวทิ้งเผื่อกดเข้ามาแก้ใหม่
+            tempPhotoDataURL = null; 
+
+            // เด้งกลับหน้าแรกทันทีโดยไม่ต้องมี Alert มาขัดจังหวะ
             navigate('page-home');
 
         } catch (error) {
             alert("เกิดข้อผิดพลาด: " + error.message);
         } finally {
+            // คืนค่าปุ่มกลับสภาพเดิม
             btnSave.innerHTML = originalBtnHTML;
             btnSave.disabled = false;
         }
     });
-
-    document.getElementById('auth-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        if (currentAuthMode === 'login') {
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    alert("เข้าสู่ระบบสำเร็จ!");
-                    navigate('page-home'); 
-                }).catch(() => alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง"));
-        } else {
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    alert("สมัครสมาชิกสำเร็จ!");
-                    navigate('page-home'); 
-                }).catch((error) => alert("เกิดข้อผิดพลาด: " + error.message));
-        }
-    });
-
-    window.navigate = function(targetPageId) {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active', 'page-flex'));
-        const targetPage = document.getElementById(targetPageId);
-        
-        if (targetPageId === 'page-splash') targetPage.classList.add('active', 'page-flex'); 
-        else targetPage.classList.add('active');
-
-        const bottomNav = document.getElementById('bottom-nav');
-        if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile') {
-            bottomNav.classList.add('hidden');
-        } else {
-            bottomNav.classList.remove('hidden');
-            updateBottomNavUI(targetPageId);
-        }
-    };
-
-    function updateBottomNavUI(activePageId) {
-        document.querySelectorAll('#bottom-nav .nav-item').forEach(item => {
-            item.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300';
-            item.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg';
-            item.querySelector('.nav-text').className = 'text-xs mt-1 nav-text group-hover:text-white';
-        });
-
-        const navMap = { 'page-home': 'nav-home', 'page-history': 'nav-history', 'page-rewards': 'nav-rewards', 'page-setting': 'nav-setting' };
-        if (navMap[activePageId]) {
-            const activeNav = document.getElementById(navMap[activePageId]);
-            activeNav.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group';
-            activeNav.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]';
-            activeNav.querySelector('.nav-text').className = 'text-xs mt-1 font-semibold nav-text text-white';
-        }
-    }
-
-    setTimeout(() => { if(document.getElementById('page-splash').classList.contains('active')) navigate('page-signup'); }, 3000);
-
-</script>
-
-</body>
-</html>
