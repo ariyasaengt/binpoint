@@ -162,7 +162,8 @@
                     <i class="fa-solid fa-camera text-white text-3xl"></i>
                 </div>
             </div>
-            <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="previewImage(event)">
+            <!-- ยอมรับเฉพาะไฟล์รูปภาพ -->
+            <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="previewAndCompressImage(event)">
             
             <div class="w-full bg-white p-6 rounded-[2rem] shadow-sm">
                 <label class="block text-sm font-bold text-gray-700 mb-2 pl-2" data-i18n="displayName">Display Name</label>
@@ -262,8 +263,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    // นำเข้า Firebase Storage
-    import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    // นำเข้า Firestore 
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
@@ -277,8 +278,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    // เปิดใช้งาน Storage
-    const storage = getStorage(app); 
+    // เปิดใช้งาน Firestore
+    const db = getFirestore(app);
 
     let currentAuthMode = 'login'; 
     let activeUser = null; 
@@ -404,16 +405,35 @@
     setLanguage('en');
     setAuthMode('login');
 
-    onAuthStateChanged(auth, (user) => {
+    // ==========================================
+    // ตรวจสอบล็อกอินและโหลดข้อมูลรูปภาพจาก Firestore
+    // ==========================================
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             activeUser = user;
             const displayName = user.displayName || (currentAuthMode === 'signup' ? document.getElementById('username').value : "New User");
-            const photoURL = user.photoURL || "https://via.placeholder.com/150";
             
+            // อัปเดตชื่อก่อน
             document.getElementById('home-display-name').textContent = displayName;
-            document.getElementById('home-profile-pic').src = photoURL;
             document.getElementById('edit-display-name').value = displayName;
-            document.getElementById('edit-profile-pic').src = photoURL;
+
+            // ตั้งรูปเริ่มต้น
+            let userPhoto = "https://via.placeholder.com/150"; 
+
+            // ไปค้นหารูปภาพที่บีบอัดแล้วจาก Firestore Database
+            try {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().profileImage) {
+                    userPhoto = docSnap.data().profileImage;
+                }
+            } catch (error) {
+                console.log("No profile image found in DB, using default.");
+            }
+
+            // แสดงรูปภาพ
+            document.getElementById('home-profile-pic').src = userPhoto;
+            document.getElementById('edit-profile-pic').src = userPhoto;
 
             if(!user.displayName && document.getElementById('username').value) {
                  updateProfile(user, { displayName: document.getElementById('username').value });
@@ -423,20 +443,54 @@
         }
     });
 
-    window.previewImage = function(event) {
+    // ==========================================
+    // ฟังก์ชันบีบอัดภาพ (Resize & Compress) 
+    // ==========================================
+    window.previewAndCompressImage = function(event) {
         const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                tempPhotoDataURL = e.target.result;
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            
+            img.onload = function() {
+                // สร้าง Canvas เพื่อวาดรูปที่เล็กลง
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 300; // บังคับรูปกว้างสุดแค่ 300px
+                const MAX_HEIGHT = 300;
+                let width = img.width;
+                let height = img.height;
+
+                // คำนวณสัดส่วนรูปภาพใหม่
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // บีบอัดให้เป็น JPG คุณภาพ 70% (เพื่อให้ไฟล์เล็กมากพอจะเซฟลง Database ได้)
+                tempPhotoDataURL = canvas.toDataURL('image/jpeg', 0.7);
                 document.getElementById('edit-profile-pic').src = tempPhotoDataURL;
             }
-            reader.readAsDataURL(file);
         }
     }
 
     // ==========================================
-    // อัปเดต: ระบบบันทึกรูปด้วย Firebase Storage
+    // ระบบบันทึกรูปและชื่อลง Firestore & Auth
     // ==========================================
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
         if (!activeUser) return;
@@ -447,39 +501,32 @@
         const originalBtnHTML = btnSave.innerHTML;
 
         try {
-            // เปลี่ยนข้อความปุ่มเป็น "กำลังบันทึก..." และปิดใช้งานปุ่มชั่วคราว
             btnSave.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> ${translations[currentLang].saving}`;
             btnSave.disabled = true;
 
-            let finalPhotoURL = activeUser.photoURL;
+            // 1. อัปเดตชื่อลงในระบบ Auth
+            await updateProfile(activeUser, { displayName: newDisplayName });
 
-            // ถ้ายูสเซอร์เลือกรูปภาพใหม่ (มี Base64 โผล่มา)
+            // 2. ถ้ายูสเซอร์มีการเลือกรูปภาพใหม่ ให้เซฟรูปลง Firestore
             if (tempPhotoDataURL) {
-                // 1. สร้างตำแหน่งไฟล์ใน Storage (ตั้งชื่อไฟล์ตามรหัส UID ของยูสเซอร์)
-                const storageRef = ref(storage, `profile_pictures/${activeUser.uid}`);
-                
-                // 2. ทำการอัปโหลดไฟล์
-                await uploadString(storageRef, tempPhotoDataURL, 'data_url');
-                
-                // 3. ดึงลิงก์ (URL) จริงๆ กลับมา
-                finalPhotoURL = await getDownloadURL(storageRef);
+                const userDocRef = doc(db, "users", activeUser.uid);
+                await setDoc(userDocRef, { 
+                    profileImage: tempPhotoDataURL 
+                }, { merge: true }); // merge: true คือการอัปเดตทับเฉพาะ field นี้
             }
 
-            // 4. บันทึก URL จริงๆ พร้อมกับชื่อลงในระบบ Auth
-            await updateProfile(activeUser, { 
-                displayName: newDisplayName,
-                photoURL: finalPhotoURL
-            });
-
             alert(translations[currentLang].saveSuccess);
+            
+            // อัปเดตหน้าจอ
             document.getElementById('home-display-name').textContent = newDisplayName;
-            if (finalPhotoURL) document.getElementById('home-profile-pic').src = finalPhotoURL;
+            if (tempPhotoDataURL) {
+                document.getElementById('home-profile-pic').src = tempPhotoDataURL;
+            }
             navigate('page-home');
 
         } catch (error) {
-            alert("Error updating profile: " + error.message);
+            alert("เกิดข้อผิดพลาด: " + error.message);
         } finally {
-            // คืนค่าปุ่มกลับเป็นเหมือนเดิม
             btnSave.innerHTML = originalBtnHTML;
             btnSave.disabled = false;
         }
