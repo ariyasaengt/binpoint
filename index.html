@@ -134,9 +134,9 @@
             </div>
         </div>
         
-        <!-- รูปแบบแบนเนอร์ใหม่ (ใช้ไฟล์ในเครื่อง โหลดเร็ว 100%) -->
+        <!-- แก้ไขบั๊กแล้ว: เอา onerror ออก และเรียกไฟล์ banner.png โดยตรง -->
         <div class="mx-5 mt-6 rounded-2xl overflow-hidden shadow-md min-h-[120px] bg-gray-100 flex items-center justify-center">
-            <img src="banner.jpg" alt="Binpoint Banner" class="w-full h-auto object-cover" onerror="this.src='banner.png'">
+            <img src="banner.png" alt="Binpoint Banner" class="w-full h-auto object-cover">
         </div>
         
         <div class="mt-6 mx-5">
@@ -425,7 +425,6 @@
             document.getElementById('home-profile-pic').src = userPhoto;
             document.getElementById('edit-profile-pic').src = userPhoto;
 
-            // หากผู้ใช้ Login ค้างไว้อยู่ ข้ามไปหน้า Home เลย
             if (isInitialLoad) {
                 navigate('page-home');
                 isInitialLoad = false;
@@ -433,7 +432,6 @@
         } else {
             activeUser = null;
             
-            // หากไม่ได้ Login ให้หน่วงเวลาหน้า Splash ไว้ 2.5 วิแล้วพาไปหน้า Auth
             if (isInitialLoad) {
                 setTimeout(() => {
                     if(document.getElementById('page-splash').classList.contains('active')) {
@@ -445,9 +443,6 @@
         }
     });
 
-    // ==========================================
-    // บีบอัดรูปภาพให้เล็กลงเพื่อให้เซฟลง Firestore ได้เร็ว
-    // ==========================================
     window.previewAndCompressImage = function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -482,9 +477,6 @@
         }
     }
 
-    // ==========================================
-    // บันทึกรูปและชื่อ แบบทำงานพร้อมกัน (Parallel)
-    // ==========================================
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
         if (!activeUser) return;
         
@@ -509,16 +501,13 @@
             }
 
             if (updateTasks.length > 0) {
-                await Promise.all(updateTasks); // สั่งอัปเดตทุกอย่างพร้อมกัน ประหยัดเวลา
+                await Promise.all(updateTasks); 
             }
 
             document.getElementById('home-display-name').textContent = newDisplayName;
             if (tempPhotoDataURL) document.getElementById('home-profile-pic').src = tempPhotoDataURL;
             
-            // ล้างค่ารูปทิ้งเมื่อเซฟเสร็จ
             tempPhotoDataURL = null; 
-
-            // เด้งกลับหน้าโฮมทันทีโดยไม่มี Alert 
             navigate('page-home');
 
         } catch (error) {
@@ -529,9 +518,6 @@
         }
     });
 
-    // ==========================================
-    // สมัครสมาชิก / เข้าสู่ระบบ
-    // ==========================================
     document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -551,9 +537,6 @@
         }
     });
 
-    // ==========================================
-    // ออกจากระบบ (Logout)
-    // ==========================================
     window.logoutApp = function() {
         signOut(auth).then(() => {
             document.getElementById('email').value = "";
@@ -564,9 +547,6 @@
         });
     };
 
-    // ==========================================
-    // ควบคุมการเปลี่ยนหน้า UI 
-    // ==========================================
     window.navigate = function(targetPageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active', 'page-flex'));
         const targetPage = document.getElementById(targetPageId);
