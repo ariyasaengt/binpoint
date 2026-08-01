@@ -133,11 +133,12 @@
                 <p class="text-xs text-gray-500" data-i18n="collectMore">Collect more to redeem rewards.</p>
             </div>
         </div>
-        <div class="mx-5 mt-6 relative rounded-2xl overflow-hidden bg-green-500 shadow-md p-5 text-white">
-            <h2 class="text-3xl font-black italic">BINPOINT</h2>
-            <p class="font-bold text-sm mt-1" data-i18n="slogan2">Every point counts<br>every reward matters</p>
-            <p class="text-[10px] mt-2 bg-green-600 inline-block px-2 py-1 rounded" data-i18n="bannerText">Collect points to redeem rewards or store coupons</p>
+        
+        <!-- รูปแบบแบนเนอร์ใหม่ -->
+        <div class="mx-5 mt-6 rounded-2xl overflow-hidden shadow-md">
+            <img src="ดีไซน์ที่ยังไม่ได้ตั้งชื่อ.jpg" alt="Binpoint Banner" class="w-full h-auto object-cover">
         </div>
+        
         <div class="mt-6 mx-5">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="participating">Participating stores</h3>
             <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
@@ -229,7 +230,6 @@
                 <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
             </div>
             
-            <!-- อัปเดต: เปลี่ยนเป็นการเรียกฟังก์ชัน logoutApp() แทนการเปลี่ยนหน้าเฉยๆ -->
             <button onclick="logoutApp()" class="w-full mt-8 bg-red-100 text-red-600 font-bold py-4 rounded-xl shadow-sm text-md hover:bg-red-200 transition" data-i18n="btnLogout">
                 Log Out
             </button>
@@ -287,7 +287,6 @@
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
-            slogan2: "Every point counts<br>every reward matters",
             tapContinue: "Tap to continue...",
             checkingAuth: "Checking connection...",
             welcome: "Welcome",
@@ -303,7 +302,6 @@
             youHave: "You have",
             points: "points",
             collectMore: "Collect more to redeem rewards.",
-            bannerText: "Collect points to redeem rewards or store coupons",
             participating: "Participating stores",
             nearYou: "Near you",
             navHome: "Home",
@@ -325,7 +323,6 @@
         },
         th: {
             slogan: "ทุกคะแนนมีความหมาย ทุกรางวัลมีค่า",
-            slogan2: "ทุกคะแนนมีความหมาย<br>ทุกรางวัลมีค่า",
             tapContinue: "แตะเพื่อดำเนินการต่อ...",
             checkingAuth: "กำลังตรวจสอบการเชื่อมต่อ...",
             welcome: "ยินดีต้อนรับ",
@@ -341,7 +338,6 @@
             youHave: "คุณมี",
             points: "คะแนน",
             collectMore: "สะสมเพิ่มเติมเพื่อแลกของรางวัล",
-            bannerText: "สะสมพอยต์เพื่อแลกของรางวัลหรือคูปองร้านค้าที่ร่วมรายการ",
             participating: "ร้านค้าที่ร่วมรายการ",
             nearYou: "ใกล้คุณ",
             navHome: "หน้าแรก",
