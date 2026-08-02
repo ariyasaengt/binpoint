@@ -14,8 +14,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh; /* Fallback สำหรับเบราว์เซอร์เก่า */
-            height: 100dvh; /* ปรับขนาดตามหน้าจอมือถือจริงเป๊ะๆ */
+            height: 100vh;
+            height: 100dvh;
             margin: 0;
             overflow: hidden; 
         }
@@ -25,7 +25,7 @@
             height: 100%;
             background: linear-gradient(135deg, #eaffea 0%, #d3f3d3 100%);
             position: relative;
-            overflow: hidden; /* สำคัญมาก: ล็อกกรอบนอกไม่ให้เลื่อน */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
@@ -45,9 +45,9 @@
             display: none;
             width: 100%;
             height: 100%;
-            overflow-y: auto; /* เลื่อนเนื้อหาภายในได้ */
-            -webkit-overflow-scrolling: touch; /* เลื่อนลื่นไหลบน iOS */
-            padding-bottom: 120px; /* ดันเนื้อหาขึ้นไม่ให้โดนเมนูด้านล่างบัง */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 120px;
         }
         
         .page.active { display: block; }
@@ -133,7 +133,7 @@
             <div class="ml-4">
                 <div class="flex items-baseline">
                     <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
-                    <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
+                    <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดตแบบเรียลไทม์ -->
                     <span id="user-points-home" class="text-2xl font-bold text-gray-800">0</span>
                     <span class="text-lg font-bold text-gray-800 ml-1" data-i18n="points">points</span>
                 </div>
@@ -235,29 +235,19 @@
             </div>
         </div>
 
+        <!-- รายการประวัติ: แสดงเฉพาะ Welcome Bonus -->
         <div class="mx-5 space-y-3">
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histEarn">You've earned points</p><p class="text-xs text-gray-400">20/05/2024</p></div>
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p>
+                        <p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p>
+                    </div>
                 </div>
-                <div class="font-bold text-green-600">+133 POINT</div>
-            </div>
-            
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-minus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histRedeem">Redeemed reward</p><p class="text-xs text-gray-400">29/04/2024</p></div>
-                </div>
-                <div class="font-bold text-red-600">-67 POINT</div>
-            </div>
-
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histEarn">You've earned points</p><p class="text-xs text-gray-400">16/04/2024</p></div>
-                </div>
-                <div class="font-bold text-green-600">+99 POINT</div>
+                <div class="font-bold text-orange-500">+500 POINT</div>
             </div>
         </div>
     </div>
@@ -388,8 +378,8 @@
             historyDesc: "See how you earned your points",
             aiAlert: "AI Notification",
             aiDesc: "Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!",
-            histEarn: "You've earned points",
-            histRedeem: "Redeemed reward",
+            welcomeBonus: "Welcome Bonus",
+            newAccount: "New Account",
             rewards: "Rewards",
             rewardDesc: "Redeem your points for eco-friendly items.",
             itemBag1: "Eco Bag (Normal)",
@@ -434,8 +424,8 @@
             historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
             aiAlert: "AI แจ้งเตือนอัจฉริยะ",
             aiDesc: "คะแนนมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!",
-            histEarn: "ได้รับคะแนนสะสม",
-            histRedeem: "แลกของรางวัล",
+            welcomeBonus: "โบนัสต้อนรับ",
+            newAccount: "เปิดบัญชีใหม่",
             rewards: "ของรางวัล",
             rewardDesc: "นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ",
             itemBag1: "กระเป๋ารักษ์โลก (ธรรมดา)",
@@ -503,10 +493,11 @@
             if (unsubscribeSnapshot) unsubscribeSnapshot();
 
             const docRef = doc(db, "users", user.uid);
+            // Real-time Update Listener ตรงนี้ทำงานกับ Firestore
             unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
                 let userPoints = 0;
                 let userPhoto = "https://via.placeholder.com/150";
-                let userDisplayName = user.displayName || "หมูเด็งเด้งเองจ้า"; // ค่าเริ่มต้นตามเอกสาร
+                let userDisplayName = user.displayName || "หมูเด็งเด้งเองจ้า";
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -515,6 +506,7 @@
                     if (data.displayName) userDisplayName = data.displayName;
                 }
 
+                // อัปเดต UI ทันทีเมื่อข้อมูลใน Database เปลี่ยนแปลง
                 document.getElementById('home-profile-pic').src = userPhoto;
                 document.getElementById('edit-profile-pic').src = userPhoto;
                 document.getElementById('user-points-home').textContent = userPoints.toLocaleString();
@@ -627,7 +619,7 @@
                     const userDocRef = doc(db, "users", user.uid);
                     await setDoc(userDocRef, { 
                         displayName: usernameInput,
-                        points: 500 // โบนัสเริ่มต้น
+                        points: 500 // ให้โบนัสต้อนรับ
                     }, { merge: true });
                     navigate('page-home');
                 })
@@ -652,6 +644,7 @@
                 
                 if (currentPoints >= cost) {
                     const newPoints = currentPoints - cost;
+                    // บันทึกลงฐานข้อมูล, onSnapshot จะจับความเคลื่อนไหวและอัปเดตเลขพอยต์ทั้ง 2 หน้าเองทันที
                     await setDoc(userDocRef, { points: newPoints }, { merge: true });
                     
                     const successMsg = currentLang === 'th' ? `แลกรางวัลสำเร็จ! หัก ${cost} คะแนน` : `Redemption successful! Deducted ${cost} points.`;
