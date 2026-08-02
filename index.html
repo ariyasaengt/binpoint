@@ -2,28 +2,30 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Binpoint App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* ตั้งค่าโครงสร้างหลักให้พอดีจอ และล็อกไม่ให้ทั้งหน้าเด้ง */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #374151;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh; /* Fallback สำหรับเบราว์เซอร์เก่า */
+            height: 100dvh; /* ปรับขนาดตามหน้าจอมือถือจริงเป๊ะๆ */
             margin: 0;
+            overflow: hidden; 
         }
 
         .app-container {
             width: 100%;
-            height: 100vh;
+            height: 100%;
             background: linear-gradient(135deg, #eaffea 0%, #d3f3d3 100%);
             position: relative;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden; /* สำคัญมาก: ล็อกกรอบนอกไม่ให้เลื่อน */
             display: flex;
             flex-direction: column;
         }
@@ -38,12 +40,16 @@
             }
         }
         
+        /* ให้การเลื่อนหน้าจอ (Scroll) เกิดขึ้นภายในเนื้อหาของแต่ละหน้าแทน */
         .page {
             display: none;
             width: 100%;
-            min-height: 100%;
-            padding-bottom: 90px;
+            height: 100%;
+            overflow-y: auto; /* เลื่อนเนื้อหาภายในได้ */
+            -webkit-overflow-scrolling: touch; /* เลื่อนลื่นไหลบน iOS */
+            padding-bottom: 120px; /* ดันเนื้อหาขึ้นไม่ให้โดนเมนูด้านล่างบัง */
         }
+        
         .page.active { display: block; }
         .page-flex.active { display: flex; }
         
@@ -56,7 +62,7 @@
 <div class="app-container" id="app-container">
 
     <!-- ================= 1. หน้าเริ่มต้น (Splash Screen) ================= -->
-    <div id="page-splash" class="page page-flex active flex-col bg-green-50 justify-between items-center py-10" style="padding-bottom: 0;">
+    <div id="page-splash" class="page page-flex active flex-col bg-green-50 justify-between items-center py-10" style="padding-bottom: 20px;">
         <header class="flex items-start gap-4 w-full px-8 mt-10">
             <div class="w-16 h-16 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
                 <i class="fa-solid fa-trash-can text-white text-3xl"></i>
@@ -75,7 +81,7 @@
     </div>
 
     <!-- ================= 2. หน้าล็อกอิน / สมัครสมาชิก (Auth) ================= -->
-    <div id="page-signup" class="page bg-gradient-to-b from-[#4a6b53] via-[#85a889] to-[#e4f5ca]" style="padding: 20px 20px 0 20px;">
+    <div id="page-signup" class="page bg-gradient-to-b from-[#4a6b53] via-[#85a889] to-[#e4f5ca]" style="padding: 20px 20px 100px 20px;">
         <div class="text-right text-white font-bold text-sm mt-4 mr-2 cursor-pointer">
             <span id="btn-en" class="lang-active" onclick="setLanguage('en')">EN</span> | 
             <span id="btn-th" class="" onclick="setLanguage('th')">TH</span>
@@ -83,7 +89,7 @@
         
         <h1 class="text-center text-4xl font-bold text-white mt-8 mb-10 drop-shadow-md" data-i18n="welcome">Welcome</h1>
 
-        <div class="bg-[#e4f5ca] rounded-[2rem] p-8 shadow-lg mt-4">
+        <div class="bg-[#e4f5ca] rounded-[2rem] p-8 shadow-lg mt-4 mb-10">
             <div class="flex justify-center space-x-6 mb-6">
                 <button type="button" id="tab-login" class="text-xl font-bold text-[#1b3a24] border-b-2 border-[#1b3a24] pb-1 px-2 transition-all" onclick="setAuthMode('login')" data-i18n="tabLogin">Login</button>
                 <button type="button" id="tab-signup" class="text-xl font-bold text-gray-400 border-b-2 border-transparent pb-1 px-2 transition-all" onclick="setAuthMode('signup')" data-i18n="tabSignup">Sign up</button>
@@ -127,6 +133,7 @@
             <div class="ml-4">
                 <div class="flex items-baseline">
                     <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
+                    <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
                     <span id="user-points-home" class="text-2xl font-bold text-gray-800">0</span>
                     <span class="text-lg font-bold text-gray-800 ml-1" data-i18n="points">points</span>
                 </div>
@@ -161,15 +168,15 @@
                 <div class="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
                     <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center text-green-500 text-2xl"><i class="fa-solid fa-leaf"></i></div>
                     <div>
-                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle1">5 วิธีแยกขยะที่บ้านง่ายๆ</h4>
-                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc1">เปลี่ยนพฤติกรรมเล็กๆ เพื่อโลกของเรา...</p>
+                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle1">5 Easy Home Recycling Tips</h4>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc1">Small changes for our planet...</p>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
                     <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-blue-500 text-2xl"><i class="fa-solid fa-recycle"></i></div>
                     <div>
-                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle2">ขยะพลาสติกไปไหนต่อ?</h4>
-                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc2">แชร์ความรู้เรื่องการรีไซเคิลในชุมชน...</p>
+                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle2">Where does plastic go?</h4>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc2">Share knowledge in our community...</p>
                     </div>
                 </div>
             </div>
@@ -224,16 +231,15 @@
             <i class="fa-solid fa-robot text-yellow-500 text-xl mt-0.5"></i>
             <div>
                 <p class="text-sm font-bold text-yellow-700" data-i18n="aiAlert">AI Notification</p>
-                <p class="text-xs text-yellow-600 mt-1 leading-relaxed" data-i18n="aiDesc">คะแนนของคุณมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!</p>
+                <p class="text-xs text-yellow-600 mt-1 leading-relaxed" data-i18n="aiDesc">Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!</p>
             </div>
         </div>
 
         <div class="mx-5 space-y-3">
-            <!-- ประวัติการได้และเสียคะแนนแบบรายวัน (จำลองตามเอกสาร) -->
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">20/05/2024</p></div>
+                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histEarn">You've earned points</p><p class="text-xs text-gray-400">20/05/2024</p></div>
                 </div>
                 <div class="font-bold text-green-600">+133 POINT</div>
             </div>
@@ -241,7 +247,7 @@
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-minus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm">Redeemed reward</p><p class="text-xs text-gray-400">29/04/2024</p></div>
+                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histRedeem">Redeemed reward</p><p class="text-xs text-gray-400">29/04/2024</p></div>
                 </div>
                 <div class="font-bold text-red-600">-67 POINT</div>
             </div>
@@ -249,17 +255,9 @@
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">16/04/2024</p></div>
+                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="histEarn">You've earned points</p><p class="text-xs text-gray-400">16/04/2024</p></div>
                 </div>
                 <div class="font-bold text-green-600">+99 POINT</div>
-            </div>
-            
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">20/03/2024</p></div>
-                </div>
-                <div class="font-bold text-green-600">+48 POINT</div>
             </div>
         </div>
     </div>
@@ -268,7 +266,7 @@
     <div id="page-rewards" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
-            <p class="text-sm text-gray-500" data-i18n="rewardDesc">นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ</p>
+            <p class="text-sm text-gray-500" data-i18n="rewardDesc">Redeem your points for eco-friendly items.</p>
         </div>
         <div class="mx-5 grid grid-cols-2 gap-4">
             <!-- กระเป๋าที่ 1 (1,999 points) -->
@@ -313,8 +311,8 @@
         </div>
     </div>
 
-    <!-- ================= เมนูด้านล่าง (Bottom Navigation) ================= -->
-    <div id="bottom-nav" class="absolute bottom-0 w-full bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
+    <!-- ================= เมนูด้านล่าง (Bottom Navigation) (ใช้ z-50 ป้องกันการโดนบัง) ================= -->
+    <div id="bottom-nav" class="absolute bottom-0 left-0 w-full z-50 bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group" onclick="navigate('page-home')" id="nav-home">
             <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]"><i class="fa-solid fa-house"></i></div>
             <span class="text-xs mt-1 font-semibold nav-text text-white" data-i18n="navHome">Home</span>
@@ -361,6 +359,7 @@
     let isInitialLoad = true;
     let unsubscribeSnapshot = null; 
 
+    // เพิ่มคำแปลภาษาต่างๆ
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
@@ -389,6 +388,8 @@
             historyDesc: "See how you earned your points",
             aiAlert: "AI Notification",
             aiDesc: "Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!",
+            histEarn: "You've earned points",
+            histRedeem: "Redeemed reward",
             rewards: "Rewards",
             rewardDesc: "Redeem your points for eco-friendly items.",
             itemBag1: "Eco Bag (Normal)",
@@ -433,6 +434,8 @@
             historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
             aiAlert: "AI แจ้งเตือนอัจฉริยะ",
             aiDesc: "คะแนนมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!",
+            histEarn: "ได้รับคะแนนสะสม",
+            histRedeem: "แลกของรางวัล",
             rewards: "ของรางวัล",
             rewardDesc: "นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ",
             itemBag1: "กระเป๋ารักษ์โลก (ธรรมดา)",
@@ -512,7 +515,6 @@
                     if (data.displayName) userDisplayName = data.displayName;
                 }
 
-                // อัปเดต UI Real-time
                 document.getElementById('home-profile-pic').src = userPhoto;
                 document.getElementById('edit-profile-pic').src = userPhoto;
                 document.getElementById('user-points-home').textContent = userPoints.toLocaleString();
@@ -625,7 +627,7 @@
                     const userDocRef = doc(db, "users", user.uid);
                     await setDoc(userDocRef, { 
                         displayName: usernameInput,
-                        points: 500 // โบนัสต้อนรับ
+                        points: 500 // โบนัสเริ่มต้น
                     }, { merge: true });
                     navigate('page-home');
                 })
@@ -633,14 +635,11 @@
         }
     });
 
-    // ==========================================
-    // ระบบตัดคะแนนเมื่อกดแลกของรางวัล
-    // ==========================================
+    // ฟังก์ชันตัดคะแนนเมื่อกดแลกรางวัล (เชื่อมต่อ Real-time)
     window.redeemReward = async function(itemName, cost) {
         if (!activeUser) return;
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         
-        // ยืนยันก่อนแลก
         const confirmMsg = currentLang === 'th' ? `คุณต้องการใช้ ${cost} คะแนน เพื่อแลก ${itemName} หรือไม่?` : `Do you want to use ${cost} points to redeem ${itemName}?`;
         if (!confirm(confirmMsg)) return;
 
@@ -653,7 +652,6 @@
                 
                 if (currentPoints >= cost) {
                     const newPoints = currentPoints - cost;
-                    // ตัดคะแนนในฐานข้อมูล (Real-time snapshot จะทำงานและอัปเดตตัวเลขหน้าจอเอง)
                     await setDoc(userDocRef, { points: newPoints }, { merge: true });
                     
                     const successMsg = currentLang === 'th' ? `แลกรางวัลสำเร็จ! หัก ${cost} คะแนน` : `Redemption successful! Deducted ${cost} points.`;
