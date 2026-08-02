@@ -550,7 +550,7 @@
     });
 
     // ==========================================
-    // อัปเดตระบบสมัครสมาชิกเพื่อแจก 500 พอยต์
+    // อัปเดตระบบสมัครสมาชิกเพื่อแจก 500 พอยต์ และบังคับอัปเดต UI ทันที
     // ==========================================
     document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -577,6 +577,10 @@
                         displayName: usernameInput,
                         points: 500 // ให้พอยต์ฟรี 500
                     }, { merge: true });
+
+                    // 3. 👉 สั่งอัปเดตตัวเลขบนหน้าเว็บให้เป็น 500 ทันที เพื่อแก้บั๊กหน้าจอไม่ยอมอัปเดต
+                    document.getElementById('user-points-home').textContent = 500;
+                    document.getElementById('user-points-history').innerHTML = `500 <span class="text-lg">POINT</span>`;
 
                     navigate('page-home');
                 })
