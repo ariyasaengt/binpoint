@@ -135,7 +135,7 @@
             </div>
         </div>
         
-        <!-- รูปแบบแบนเนอร์ใหม่ (ดึงรูปตรงจากลิงก์ที่ให้มา) -->
+        <!-- รูปแบบแบนเนอร์ใหม่ -->
         <div class="mx-5 mt-6 rounded-2xl overflow-hidden shadow-md min-h-[120px] bg-gray-100 flex items-center justify-center">
             <img src="https://i.postimg.cc/v15ffZxN/Binpoint-Every-point-adds-up-and-every-reward-leaves-an-impact.png" alt="Binpoint Banner" class="w-full h-auto object-cover">
         </div>
@@ -194,12 +194,10 @@
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <div class="ml-4">
-                <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
                 <span id="user-points-history" class="text-2xl font-bold text-gray-800">0 <span class="text-lg">POINT</span></span>
             </div>
         </div>
         <div class="mx-5 space-y-3">
-            <!-- โชว์รายการแจกโบนัสต้อนรับในประวัติ -->
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-gift"></i></div>
@@ -207,7 +205,6 @@
                 </div>
                 <div class="font-bold text-orange-500">+500</div>
             </div>
-            <!-- ประวัติการทิ้งขยะ -->
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center hidden">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-bottle-water"></i></div>
@@ -253,7 +250,6 @@
         </div>
     </div>
 
-
     <!-- ================= เมนูด้านล่าง (Bottom Navigation) ================= -->
     <div id="bottom-nav" class="absolute bottom-0 w-full bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group" onclick="navigate('page-home')" id="nav-home">
@@ -280,7 +276,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // เปลี่ยนมาดึง onSnapshot เพื่อทำระบบ Real-time
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
@@ -299,9 +296,9 @@
     let currentAuthMode = 'login'; 
     let activeUser = null; 
     let tempPhotoDataURL = null; 
-    let isInitialLoad = true; 
+    let isInitialLoad = true;
+    let unsubscribeSnapshot = null; // ตัวแปรสำหรับเก็บฟังก์ชันยกเลิกการดึงข้อมูล Real-time
 
-    // เพิ่มคำแปลภาษาสำหรับ Welcome Bonus
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
@@ -423,9 +420,9 @@
     setAuthMode('login');
 
     // ==========================================
-    // ตรวจสอบสถานะการล็อกอินและจัดการหน้า Splash Screen
+    // ตรวจสอบสถานะและตั้งค่า Real-time Listener (onSnapshot)
     // ==========================================
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
         if (user) {
             activeUser = user;
             const displayName = user.displayName || "User";
@@ -433,28 +430,29 @@
             document.getElementById('home-display-name').textContent = displayName;
             document.getElementById('edit-display-name').value = displayName;
 
-            let userPhoto = "https://via.placeholder.com/150"; 
-            let userPoints = 0; // ตั้งค่าเริ่มต้นพอยต์เป็น 0
+            // ยกเลิกการฟังข้อมูลเก่า (ถ้ามี) ก่อนตั้งค่าใหม่
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+            }
 
-            try {
-                // ดึงข้อมูลผู้ใช้จาก Firestore
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
+            // ระบบ Real-time: ทันทีที่ข้อมูลใน Firestore เปลี่ยน โค้ดส่วนนี้จะทำงานซ้ำอัตโนมัติ
+            const docRef = doc(db, "users", user.uid);
+            unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
+                let userPoints = 0;
+                let userPhoto = "https://via.placeholder.com/150";
+
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.profileImage) userPhoto = data.profileImage;
-                    // ถ้ามีพอยต์อยู่ในระบบ ให้ดึงมาแสดงผล ถ้าไม่มีจะใช้ 0 อัตโนมัติ
                     if (data.points !== undefined) userPoints = data.points;
                 }
-            } catch (error) {
-                console.log("No extra user data found in DB");
-            }
 
-            // อัปเดต UI 
-            document.getElementById('home-profile-pic').src = userPhoto;
-            document.getElementById('edit-profile-pic').src = userPhoto;
-            document.getElementById('user-points-home').textContent = userPoints;
-            document.getElementById('user-points-history').innerHTML = `${userPoints} <span class="text-lg">POINT</span>`;
+                // อัปเดต UI ทันทีแบบเรียลไทม์
+                document.getElementById('home-profile-pic').src = userPhoto;
+                document.getElementById('edit-profile-pic').src = userPhoto;
+                document.getElementById('user-points-home').textContent = userPoints;
+                document.getElementById('user-points-history').innerHTML = `${userPoints} <span class="text-lg">POINT</span>`;
+            });
 
             if (isInitialLoad) {
                 navigate('page-home');
@@ -462,6 +460,10 @@
             }
         } else {
             activeUser = null;
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot(); // หยุดฟังข้อมูลเมื่อผู้ใช้ออกจากระบบ
+                unsubscribeSnapshot = null;
+            }
             
             if (isInitialLoad) {
                 setTimeout(() => {
@@ -536,7 +538,6 @@
             }
 
             document.getElementById('home-display-name').textContent = newDisplayName;
-            if (tempPhotoDataURL) document.getElementById('home-profile-pic').src = tempPhotoDataURL;
             
             tempPhotoDataURL = null; 
             navigate('page-home');
@@ -549,9 +550,6 @@
         }
     });
 
-    // ==========================================
-    // อัปเดตระบบสมัครสมาชิกเพื่อแจก 500 พอยต์ และบังคับอัปเดต UI ทันที
-    // ==========================================
     document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -568,19 +566,16 @@
                 .then(async (userCredential) => { 
                     const user = userCredential.user;
                     
-                    // 1. อัปเดตชื่อโปรไฟล์
+                    // อัปเดตชื่อโปรไฟล์
                     await updateProfile(user, { displayName: usernameInput });
                     
-                    // 2. สร้างเอกสารใน Firestore พร้อมให้โบนัสต้อนรับ 500 พอยต์ ทันที
+                    // สร้างเอกสารพร้อมให้ 500 พอยต์ 
+                    // (onSnapshot จะตรวจจับการเปลี่ยนแปลงนี้และอัปเดตหน้าจออัตโนมัติทันที)
                     const userDocRef = doc(db, "users", user.uid);
                     await setDoc(userDocRef, { 
                         displayName: usernameInput,
-                        points: 500 // ให้พอยต์ฟรี 500
+                        points: 500 
                     }, { merge: true });
-
-                    // 3. 👉 สั่งอัปเดตตัวเลขบนหน้าเว็บให้เป็น 500 ทันที เพื่อแก้บั๊กหน้าจอไม่ยอมอัปเดต
-                    document.getElementById('user-points-home').textContent = 500;
-                    document.getElementById('user-points-history').innerHTML = `500 <span class="text-lg">POINT</span>`;
 
                     navigate('page-home');
                 })
