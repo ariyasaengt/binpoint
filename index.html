@@ -45,7 +45,7 @@
             height: 100%;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 120px;
+            padding-bottom: 120px; /* เว้นที่ว่างให้ปุ่มตรงกลาง */
         }
         
         .page.active { display: block; }
@@ -53,6 +53,16 @@
         
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .lang-active { color: #facc15; text-decoration: underline; }
+
+        /* Animation สำหรับการสแกน AI */
+        @keyframes scanner {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        .animate-scan {
+            animation: scanner 2s infinite linear;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +111,6 @@
                 <input type="password" id="password" data-i18n="phPassword" placeholder="Password" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 
                 <div id="field-terms" class="flex items-center pl-2 pt-2 hidden cursor-pointer" onclick="document.getElementById('terms').click()">
-                    <!-- เอา required ออก เพื่อให้เช็คด้วย JS และโชว์ Modal แทน popup ของเบราว์เซอร์ -->
                     <input type="checkbox" id="terms" class="w-4 h-4 text-[#1b3a24] rounded focus:ring-green-500 cursor-pointer">
                     <label for="terms" class="ml-2 text-sm font-bold text-[#1b3a24] cursor-pointer" data-i18n="terms">I accept the terms and conditions</label>
                 </div>
@@ -115,7 +124,6 @@
 
     <!-- ================= 3. หน้าโฮม (Home) ================= -->
     <div id="page-home" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <!-- เพิ่มไอคอน Edit Profile เพื่อให้รู้ว่ากดได้ -->
         <div class="flex items-center p-6 pt-10 cursor-pointer hover:bg-green-100 transition rounded-b-3xl" onclick="navigate('page-profile')">
             <div class="w-14 h-14 rounded-full bg-gray-300 overflow-hidden border-2 border-white shadow-sm flex-shrink-0 relative group">
                 <img id="home-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
@@ -129,11 +137,11 @@
             </div>
         </div>
 
-        <div class="mx-5 bg-white rounded-2xl p-4 shadow-sm flex items-center">
-            <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
+        <div class="mx-5 bg-white rounded-2xl p-4 shadow-sm flex items-center relative overflow-hidden">
+            <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl z-10">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
-            <div class="ml-4">
+            <div class="ml-4 z-10">
                 <div class="flex items-baseline">
                     <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
                     <span id="user-points-home" class="text-2xl font-bold text-gray-800">0</span>
@@ -142,12 +150,26 @@
                 <p class="text-xs text-gray-500" data-i18n="collectMore">Collect more to redeem rewards.</p>
             </div>
         </div>
+
+        <!-- ================= Impact Dashboard (Carbon Footprint) ================= -->
+        <div class="mx-5 mt-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-4 shadow-sm flex items-center border border-blue-100">
+            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-2xl">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+            <div class="ml-4 flex-1">
+                <p class="text-xs text-gray-500 font-bold" data-i18n="impactTitle">Carbon Impact</p>
+                <div class="flex items-baseline">
+                    <span id="co2-saved" class="text-xl font-black text-green-600">0.00</span>
+                    <span class="text-xs font-bold text-gray-600 ml-1" data-i18n="kgCo2">kg CO2 Reduced</span>
+                </div>
+            </div>
+            <i class="fa-solid fa-leaf text-green-200 text-4xl absolute right-8 opacity-50"></i>
+        </div>
         
         <div class="mx-5 mt-6 rounded-2xl overflow-hidden shadow-md min-h-[120px] bg-gray-100 flex items-center justify-center">
             <img src="https://i.postimg.cc/v15ffZxN/Binpoint-Every-point-adds-up-and-every-reward-leaves-an-impact.png" alt="Binpoint Banner" class="w-full h-auto object-cover">
         </div>
         
-        <!-- ร้านค้าพันธมิตร (เพิ่ม onClick ให้กดดูโปรโมชันได้) -->
         <div class="mt-6 mx-5">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="participating">Participating stores</h3>
             <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
@@ -157,12 +179,10 @@
                     </div>
                     <p class="text-xs font-bold text-center mt-2 text-gray-800" data-i18n="nearYou">Near you</p>
                 </div>
-                <!-- Brew Bliss -->
                 <div class="flex-shrink-0 w-20 flex flex-col items-center cursor-pointer hover:opacity-80 transition transform hover:scale-105" onclick="showStorePromo('Brew Bliss')">
                     <div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-[10px] text-center leading-tight">BREW<br>BLISS</div>
                     <p class="text-xs font-bold text-center mt-2 text-gray-800">Brew Bliss</p>
                 </div>
-                <!-- Mini Mart -->
                 <div class="flex-shrink-0 w-20 flex flex-col items-center cursor-pointer hover:opacity-80 transition transform hover:scale-105" onclick="showStorePromo('Mini Mart')">
                     <div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-[10px] text-center leading-tight">Mini<br>MART</div>
                     <p class="text-xs font-bold text-center mt-2 text-gray-800">Mini Mart</p>
@@ -218,117 +238,190 @@
         </div>
     </div>
 
-    <!-- ================= 5. หน้าประวัติ / พอยต์ (History / Point) ================= -->
+    <!-- ================= 5. หน้าประวัติ / พอยต์ & Leaderboard ================= -->
     <div id="page-history" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
-        <div class="p-6 pt-10">
+        <div class="p-6 pt-10 pb-4">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="pointHistory">Point History</h1>
             <p class="text-sm text-gray-500" data-i18n="historyDesc">See how you earned your points</p>
         </div>
         
-        <div class="mx-5 mb-4 bg-white rounded-2xl p-4 shadow-sm flex items-center">
-            <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
-                <i class="fa-solid fa-trash-can"></i>
+        <!-- Tab สลับระหว่าง History และ Leaderboard -->
+        <div class="mx-5 mb-6 bg-green-100 rounded-full p-1 flex">
+            <button id="tab-hist-btn" onclick="switchPointTab('hist')" class="flex-1 py-2 text-sm font-bold bg-white text-[#1b3a24] rounded-full shadow-sm transition-all" data-i18n="tabHist">History</button>
+            <button id="tab-lead-btn" onclick="switchPointTab('lead')" class="flex-1 py-2 text-sm font-bold text-gray-500 hover:text-[#1b3a24] rounded-full transition-all" data-i18n="tabLead">Leaderboard</button>
+        </div>
+
+        <!-- Section: History -->
+        <div id="section-history">
+            <div class="mx-5 mb-4 bg-white rounded-2xl p-4 shadow-sm flex items-center">
+                <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
+                    <i class="fa-solid fa-trash-can"></i>
+                </div>
+                <div class="ml-4">
+                    <span id="user-points-history" class="text-2xl font-bold text-gray-800">0 <span class="text-lg">POINT</span></span>
+                </div>
             </div>
-            <div class="ml-4">
-                <span id="user-points-history" class="text-2xl font-bold text-gray-800">0 <span class="text-lg">POINT</span></span>
+
+            <div class="mx-5 mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+                <i class="fa-solid fa-robot text-yellow-500 text-xl mt-0.5"></i>
+                <div>
+                    <p class="text-sm font-bold text-yellow-700" data-i18n="aiAlert">AI Notification</p>
+                    <p class="text-xs text-yellow-600 mt-1 leading-relaxed" data-i18n="aiDesc">Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!</p>
+                </div>
+            </div>
+
+            <div class="mx-5 space-y-3" id="history-list">
+                <!-- Data will append here -->
+                <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p>
+                            <p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p>
+                        </div>
+                    </div>
+                    <div class="font-bold text-orange-500">+500 POINT</div>
+                </div>
             </div>
         </div>
 
-        <div class="mx-5 mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-            <i class="fa-solid fa-robot text-yellow-500 text-xl mt-0.5"></i>
-            <div>
-                <p class="text-sm font-bold text-yellow-700" data-i18n="aiAlert">AI Notification</p>
-                <p class="text-xs text-yellow-600 mt-1 leading-relaxed" data-i18n="aiDesc">Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!</p>
-            </div>
-        </div>
-
-        <div class="mx-5 space-y-3">
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3">
-                        <i class="fa-solid fa-gift"></i>
+        <!-- Section: Leaderboard & Badges -->
+        <div id="section-leaderboard" class="hidden">
+            <!-- Badges -->
+            <div class="mx-5 mb-6">
+                <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="yourBadges">Your Badges</h3>
+                <div class="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 text-3xl shadow-inner border-2 border-yellow-300">
+                        <i class="fa-solid fa-medal"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p>
-                        <p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p>
+                        <p class="font-bold text-gray-800" data-i18n="badge1">Golden Recycler</p>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="badge1Desc">Saved over 50kg of CO2!</p>
                     </div>
                 </div>
-                <div class="font-bold text-orange-500">+500 POINT</div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="mx-5">
+                <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="topRecyclers">Top Recyclers this week</h3>
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b flex items-center bg-yellow-50">
+                        <span class="font-black text-xl text-yellow-500 w-8 text-center">1</span>
+                        <div class="w-10 h-10 rounded-full bg-gray-300 ml-2 overflow-hidden"><img src="https://i.pravatar.cc/150?img=1" class="w-full h-full object-cover"></div>
+                        <span class="ml-3 font-bold text-gray-800 flex-1">Nong MhuDeng</span>
+                        <span class="font-bold text-green-600">8,450 pts</span>
+                    </div>
+                    <div class="p-4 border-b flex items-center bg-gray-50">
+                        <span class="font-black text-xl text-gray-400 w-8 text-center">2</span>
+                        <div class="w-10 h-10 rounded-full bg-gray-300 ml-2 overflow-hidden"><img src="https://i.pravatar.cc/150?img=3" class="w-full h-full object-cover"></div>
+                        <span class="ml-3 font-bold text-gray-800 flex-1">GreenLover99</span>
+                        <span class="font-bold text-green-600">6,120 pts</span>
+                    </div>
+                    <div class="p-4 flex items-center bg-orange-50">
+                        <span class="font-black text-xl text-orange-400 w-8 text-center">3</span>
+                        <div class="w-10 h-10 rounded-full bg-gray-300 ml-2 overflow-hidden"><img src="https://i.pravatar.cc/150?img=5" class="w-full h-full object-cover"></div>
+                        <span class="ml-3 font-bold text-gray-800 flex-1">SaveTheEarth</span>
+                        <span class="font-bold text-green-600">4,300 pts</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= 6. หน้ารางวัล (Rewards & Redemption) ================= -->
-    <div id="page-rewards" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
+    <!-- ================= 6. หน้าสแกน AI (Scan Page) ================= -->
+    <div id="page-scan" class="page bg-gray-900">
+        <div class="p-6 pt-10 flex items-center justify-between">
+            <i class="fa-solid fa-xmark text-3xl cursor-pointer text-white" onclick="navigate('page-home')"></i>
+            <h1 class="text-xl font-bold text-white" data-i18n="scanTitle">Scan Trash / QR</h1>
+            <div class="w-8"></div>
+        </div>
+        
+        <div class="flex flex-col items-center justify-center mt-10 px-5">
+            <p class="text-gray-300 text-center mb-8 text-sm" data-i18n="scanDesc">Point your camera at a smart bin QR code or recyclable item to earn points.</p>
+            
+            <!-- Camera Viewfinder -->
+            <div class="relative w-full max-w-sm aspect-[3/4] bg-black rounded-3xl mx-auto overflow-hidden border-2 border-gray-600 shadow-2xl">
+                <!-- Corner Targets -->
+                <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-green-500"></div>
+                <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-green-500"></div>
+                <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-green-500"></div>
+                <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-green-500"></div>
+                
+                <div class="absolute inset-0 flex items-center justify-center opacity-50">
+                    <i class="fa-solid fa-camera text-gray-500 text-6xl"></i>
+                </div>
+                <!-- Scanning Laser -->
+                <div class="absolute w-full h-1 bg-green-400 animate-scan shadow-[0_0_20px_#4ade80]"></div>
+            </div>
+
+            <!-- Fake Action Button -->
+            <button onclick="simulateScan()" id="btn-sim-scan" class="mt-10 w-full max-w-sm bg-green-500 text-white font-bold py-4 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] hover:bg-green-600 transition flex justify-center items-center gap-2 text-lg">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">Simulate AI Scan</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 7. หน้า Market (Market & Rewards) ================= -->
+    <div id="page-market" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
-            <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
+            <h1 class="text-2xl font-bold text-gray-800" data-i18n="navMarket">Market</h1>
             <p class="text-sm text-gray-500" data-i18n="rewardDesc">Redeem your points for eco-friendly items.</p>
         </div>
         
-        <div class="mx-5 grid grid-cols-2 gap-4 pb-10">
-            <!-- รางวัลที่ 1 (8,000 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-blue-50 rounded-xl">
-                    <i class="fa-solid fa-suitcase-rolling text-5xl text-blue-400 drop-shadow-md"></i>
+        <!-- Section: Rewards (Discounts) -->
+        <div class="mx-5 mb-6">
+            <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="rewards">Rewards (Discounts)</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="w-full h-20 mb-3 flex items-center justify-center bg-yellow-50 rounded-xl"><i class="fa-solid fa-ticket text-4xl text-yellow-500 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemDiscount10">10% Store Discount</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">1,000 pts</p>
+                    <button onclick="redeemReward('10% Store Discount', 1000)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
                 </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag2">Eco Bag (Premium)</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">8,000 pts</p>
-                <button onclick="redeemReward('Premium Eco Bag', 8000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="w-full h-20 mb-3 flex items-center justify-center bg-orange-50 rounded-xl"><i class="fa-solid fa-coffee text-4xl text-orange-400 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemCoffee">Coffee Discount</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">500 pts</p>
+                    <button onclick="redeemReward('Coffee Discount', 500)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+                </div>
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="w-full h-20 mb-3 flex items-center justify-center bg-pink-50 rounded-xl"><i class="fa-solid fa-ice-cream text-4xl text-pink-400 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTopping">Free Topping</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">150 pts</p>
+                    <button onclick="redeemReward('Free Topping', 150)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+                </div>
             </div>
+        </div>
 
-            <!-- รางวัลที่ 2 (5,000 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-purple-50 rounded-xl">
-                    <i class="fa-solid fa-mug-hot text-5xl text-purple-400 drop-shadow-md"></i>
+        <!-- Section: Eco Shop (Products) -->
+        <div class="mx-5 pb-10">
+            <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="ecoShop">Eco Shop</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="w-full h-24 mb-3 flex items-center justify-center bg-blue-50 rounded-xl"><i class="fa-solid fa-suitcase-rolling text-5xl text-blue-400 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag2">Eco Bag (Premium)</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">8,000 pts</p>
+                    <button onclick="redeemReward('Premium Eco Bag', 8000)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
                 </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTumbler">Eco Tumbler</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">5,000 pts</p>
-                <button onclick="redeemReward('Eco Tumbler', 5000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
-            </div>
-
-            <!-- รางวัลที่ 3 (1,999 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-green-50 rounded-xl">
-                    <i class="fa-solid fa-bag-shopping text-5xl text-green-400 drop-shadow-md"></i>
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="w-full h-24 mb-3 flex items-center justify-center bg-purple-50 rounded-xl"><i class="fa-solid fa-mug-hot text-5xl text-purple-400 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTumbler">Eco Tumbler</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">5,000 pts</p>
+                    <button onclick="redeemReward('Eco Tumbler', 5000)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
                 </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag1">Eco Bag (Normal)</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">1,999 pts</p>
-                <button onclick="redeemReward('Eco Bag (Normal)', 1999)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
-            </div>
-            
-            <!-- รางวัลที่ 4 (1,000 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-yellow-50 rounded-xl">
-                    <i class="fa-solid fa-ticket text-5xl text-yellow-500 drop-shadow-md"></i>
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="w-full h-24 mb-3 flex items-center justify-center bg-green-50 rounded-xl"><i class="fa-solid fa-bag-shopping text-5xl text-green-400 drop-shadow-md"></i></div>
+                    <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag1">Eco Bag (Normal)</h3>
+                    <p class="text-xs font-bold mt-1 text-orange-500">1,999 pts</p>
+                    <button onclick="redeemReward('Eco Bag (Normal)', 1999)" class="mt-3 w-full bg-[#1b3a24] text-white text-[10px] font-bold py-2 rounded-full hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
                 </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemDiscount10">10% Store Discount</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">1,000 pts</p>
-                <button onclick="redeemReward('10% Store Discount', 1000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
-            </div>
-
-            <!-- รางวัลที่ 5 (500 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-orange-50 rounded-xl">
-                    <i class="fa-solid fa-coffee text-5xl text-orange-400 drop-shadow-md"></i>
-                </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemCoffee">Coffee Discount</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">500 pts</p>
-                <button onclick="redeemReward('Coffee Discount', 500)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
-            </div>
-
-            <!-- รางวัลที่ 6 (150 points) -->
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-pink-50 rounded-xl">
-                    <i class="fa-solid fa-ice-cream text-5xl text-pink-400 drop-shadow-md"></i>
-                </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTopping">Free Topping</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">150 pts</p>
-                <button onclick="redeemReward('Free Topping', 150)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
             </div>
         </div>
     </div>
 
-    <!-- ================= 7. หน้าตั้งค่า (Setting) ================= -->
+    <!-- ================= 8. หน้าตั้งค่า (Setting) ================= -->
     <div id="page-setting" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="settings">Settings</h1>
@@ -360,7 +453,7 @@
         </div>
     </div>
 
-    <!-- ================= 8. หน้าบทความ (Article) ================= -->
+    <!-- ================= 9. หน้าบทความ (Article) ================= -->
     <div id="page-article" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10 flex items-center">
             <i class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-4 text-gray-800" onclick="navigate('page-home')"></i>
@@ -374,14 +467,15 @@
         </div>
     </div>
 
-    <!-- ================= ระบบแจ้งเตือน Custom Modal UI ================= -->
+    <!-- ================= ระบบแจ้งเตือน Custom Modal UI (รองรับ HTML ภายใน Message) ================= -->
     <div id="custom-modal" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 opacity-0 px-6">
         <div id="custom-modal-box" class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 text-center">
             <div id="modal-icon-container" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-4">
                 <i id="modal-icon" class="fa-solid text-3xl"></i>
             </div>
             <h2 id="modal-title" class="text-xl font-bold text-gray-800 mb-2">Title</h2>
-            <p id="modal-message" class="text-sm text-gray-600 mb-6 leading-relaxed">Message</p>
+            <!-- เปลี่ยนเป็น div เพื่อให้รองรับ HTML (เช่น Barcode) -->
+            <div id="modal-message" class="text-sm text-gray-600 mb-6 leading-relaxed w-full">Message</div>
             <div id="modal-buttons" class="flex gap-3 justify-center">
                 <button id="modal-btn-cancel" class="hidden flex-1 py-3 rounded-full font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">Cancel</button>
                 <button id="modal-btn-confirm" class="flex-1 py-3 rounded-full font-bold text-white bg-[#1b3a24] hover:bg-green-900 transition">OK</button>
@@ -389,24 +483,37 @@
         </div>
     </div>
 
-    <!-- ================= เมนูด้านล่าง (Bottom Navigation) ================= -->
-    <div id="bottom-nav" class="absolute bottom-0 left-0 w-full z-50 bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-6 py-4 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden">
+    <!-- ================= เมนูด้านล่าง (Bottom Navigation) แบบ 5 ปุ่ม มีปุ่ม Scan ลอยตรงกลาง ================= -->
+    <div id="bottom-nav" class="fixed bottom-0 left-0 w-full z-50 bg-[#1b3a24] rounded-t-3xl flex justify-between items-center px-4 py-3 shadow-[0_-10px_20px_rgba(0,0,0,0.15)] hidden sm:max-w-[400px] sm:left-1/2 sm:-translate-x-1/2">
+        
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group" onclick="navigate('page-home')" id="nav-home">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]"><i class="fa-solid fa-house"></i></div>
-            <span class="text-xs mt-1 font-semibold nav-text text-white" data-i18n="navHome">Home</span>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-5px]"><i class="fa-solid fa-house"></i></div>
+            <span class="text-[10px] mt-1 font-semibold nav-text text-white" data-i18n="navHome">Home</span>
         </div>
+        
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-history')" id="nav-history">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-regular fa-trash-can"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navPoint">Point</span>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg"><i class="fa-solid fa-ranking-star"></i></div>
+            <span class="text-[10px] mt-1 nav-text group-hover:text-white" data-i18n="navPoint">Point</span>
         </div>
-        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-rewards')" id="nav-rewards">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gift"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navReward">Reward</span>
+        
+        <!-- ปุ่มสแกนตรงกลาง (ลอยขึ้นมา) -->
+        <div class="flex flex-col items-center flex-[1.2] cursor-pointer group relative -top-6" onclick="navigate('page-scan')">
+            <div class="w-16 h-16 rounded-full bg-green-500 border-4 border-[#1b3a24] flex items-center justify-center text-3xl text-white shadow-lg transform transition-transform hover:scale-110">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <span class="text-[10px] mt-1 font-bold text-green-400 drop-shadow-md" data-i18n="navScan">Scan</span>
         </div>
+
+        <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-market')" id="nav-market">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg"><i class="fa-solid fa-store"></i></div>
+            <span class="text-[10px] mt-1 nav-text group-hover:text-white" data-i18n="navMarket">Market</span>
+        </div>
+
         <div class="flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300" onclick="navigate('page-setting')" id="nav-setting">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gear"></i></div>
-            <span class="text-xs mt-1 nav-text group-hover:text-white" data-i18n="navSetting">Setting</span>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg"><i class="fa-solid fa-gear"></i></div>
+            <span class="text-[10px] mt-1 nav-text group-hover:text-white" data-i18n="navSetting">Setting</span>
         </div>
+
     </div>
 
 </div>
@@ -436,6 +543,7 @@
     let tempPhotoDataURL = null; 
     let isInitialLoad = true;
     let unsubscribeSnapshot = null; 
+    let userCurrentPoints = 0; // เก็บพอยต์ในหน่วยความจำสำหรับการสแกน
 
     const translations = {
         en: {
@@ -455,19 +563,32 @@
             youHave: "You have",
             points: "points",
             collectMore: "Collect more to redeem rewards.",
+            impactTitle: "Carbon Impact",
+            kgCo2: "kg CO2 Reduced",
             participating: "Participating stores",
             nearYou: "Near you",
             navHome: "Home",
             navPoint: "Point",
-            navReward: "Reward",
+            navScan: "Scan",
+            navMarket: "Market",
             navSetting: "Setting",
-            pointHistory: "Point History",
+            pointHistory: "Point & Rank",
             historyDesc: "See how you earned your points",
+            tabHist: "History",
+            tabLead: "Leaderboard",
             aiAlert: "AI Notification",
             aiDesc: "Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!",
             welcomeBonus: "Welcome Bonus",
             newAccount: "New Account",
-            rewards: "Rewards",
+            yourBadges: "Your Badges",
+            badge1: "Golden Recycler",
+            badge1Desc: "Saved over 50kg of CO2!",
+            topRecyclers: "Top Recyclers this week",
+            scanTitle: "Scan Trash / QR",
+            scanDesc: "Point your camera at a smart bin QR code or recyclable item to earn points.",
+            simScan: "Simulate AI Scan",
+            rewards: "Rewards (Discounts)",
+            ecoShop: "Eco Shop",
             rewardDesc: "Redeem your points for eco-friendly items.",
             itemBag1: "Eco Bag (Normal)",
             itemBag2: "Eco Bag (Premium)",
@@ -490,7 +611,9 @@
             eduDesc2: "Share knowledge in our community...",
             modalCancel: "Cancel",
             modalConfirm: "Confirm",
-            modalOk: "OK"
+            modalOk: "OK",
+            showCashier: "Please show this barcode to the cashier.",
+            redeemSuccessMsg: "Redemption Successful!"
         },
         th: {
             slogan: "ทุกคะแนนมีความหมาย ทุกรางวัลมีค่า",
@@ -509,20 +632,33 @@
             youHave: "คุณมี",
             points: "คะแนน",
             collectMore: "สะสมเพิ่มเติมเพื่อแลกของรางวัล",
+            impactTitle: "ผลกระทบเชิงบวก",
+            kgCo2: "กก. คาร์บอนที่ลดได้",
             participating: "ร้านค้าที่ร่วมรายการ",
             nearYou: "ใกล้คุณ",
             navHome: "หน้าแรก",
-            navPoint: "พอยต์",
-            navReward: "รางวัล",
+            navPoint: "แต้มและอันดับ",
+            navScan: "สแกน",
+            navMarket: "ตลาด",
             navSetting: "ตั้งค่า",
-            pointHistory: "ประวัติคะแนน",
-            historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
+            pointHistory: "ประวัติและอันดับ",
+            historyDesc: "ดูที่มาของคะแนนและการจัดอันดับของคุณ",
+            tabHist: "ประวัติ",
+            tabLead: "กระดานผู้นำ",
             aiAlert: "AI แจ้งเตือนอัจฉริยะ",
             aiDesc: "คะแนนมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!",
             welcomeBonus: "โบนัสต้อนรับ",
             newAccount: "เปิดบัญชีใหม่",
-            rewards: "ของรางวัล",
-            rewardDesc: "นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ",
+            yourBadges: "เหรียญตราของคุณ",
+            badge1: "นักรีไซเคิลมือทอง",
+            badge1Desc: "ช่วยลดคาร์บอนได้มากกว่า 50 กก.!",
+            topRecyclers: "นักรีไซเคิลยอดเยี่ยมสัปดาห์นี้",
+            scanTitle: "สแกนขยะ / QR Code",
+            scanDesc: "หันกล้องไปที่ QR Code ของถังขยะอัจฉริยะ หรือสแกนขยะรีไซเคิลเพื่อรับคะแนน",
+            simScan: "จำลองการสแกนด้วย AI",
+            rewards: "คูปองส่วนลด",
+            ecoShop: "ร้านค้ารักษ์โลก",
+            rewardDesc: "นำพอยต์มาแลกของรางวัลหรือส่วนลดรักษ์โลกกันเถอะ",
             itemBag1: "กระเป๋ารักษ์โลก (ธรรมดา)",
             itemBag2: "กระเป๋ารักษ์โลก (พรีเมียม)",
             itemTumbler: "แก้วน้ำรักษ์โลก",
@@ -544,7 +680,9 @@
             eduDesc2: "แชร์ความรู้เรื่องการรีไซเคิลในชุมชน...",
             modalCancel: "ยกเลิก",
             modalConfirm: "ตกลง",
-            modalOk: "รับทราบ"
+            modalOk: "รับทราบ",
+            showCashier: "โปรดแสดงบาร์โค้ดนี้ให้พนักงานหน้าเคาน์เตอร์",
+            redeemSuccessMsg: "แลกของรางวัลสำเร็จ!"
         }
     };
 
@@ -574,7 +712,7 @@
             btnCancel.classList.add('hidden');
 
             titleEl.textContent = options.title || "Notification";
-            msgEl.textContent = options.message || "";
+            msgEl.innerHTML = options.message || ""; // ใช้ innerHTML เพื่อใส่ Barcode UI ได้
             btnConfirm.textContent = options.confirmText || "OK";
 
             if (options.type === 'confirm') {
@@ -588,6 +726,9 @@
             } else if (options.type === 'error') {
                 iconContainer.classList.add('bg-red-100');
                 icon.className = "fa-solid fa-xmark text-red-500 text-3xl";
+            } else if (options.type === 'barcode') {
+                // ประเภทพิเศษซ่อนไอคอนวงกลม
+                iconContainer.classList.add('hidden');
             }
 
             modal.classList.remove('hidden');
@@ -603,6 +744,7 @@
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
+                    iconContainer.classList.remove('hidden'); // คืนค่า
                     resolve(result);
                 }, 300);
             };
@@ -612,7 +754,70 @@
         });
     }
 
-    // ================= ฟังก์ชันกดดูโปรโมชันร้านค้า =================
+    window.switchPointTab = function(tab) {
+        const histBtn = document.getElementById('tab-hist-btn');
+        const leadBtn = document.getElementById('tab-lead-btn');
+        const secHist = document.getElementById('section-history');
+        const secLead = document.getElementById('section-leaderboard');
+
+        if(tab === 'hist') {
+            histBtn.className = "flex-1 py-2 text-sm font-bold bg-white text-[#1b3a24] rounded-full shadow-sm transition-all";
+            leadBtn.className = "flex-1 py-2 text-sm font-bold text-gray-500 hover:text-[#1b3a24] rounded-full transition-all";
+            secHist.classList.remove('hidden');
+            secLead.classList.add('hidden');
+        } else {
+            leadBtn.className = "flex-1 py-2 text-sm font-bold bg-white text-[#1b3a24] rounded-full shadow-sm transition-all";
+            histBtn.className = "flex-1 py-2 text-sm font-bold text-gray-500 hover:text-[#1b3a24] rounded-full transition-all";
+            secLead.classList.remove('hidden');
+            secHist.classList.add('hidden');
+        }
+    };
+
+    window.simulateScan = async function() {
+        if (!activeUser) return;
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        const btnScan = document.getElementById('btn-sim-scan');
+        
+        btnScan.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Scanning...`;
+        btnScan.disabled = true;
+
+        setTimeout(async () => {
+            const randomPoints = Math.floor(Math.random() * 41) + 10; // ได้แต้ม 10 - 50 แต้ม
+            const newPoints = userCurrentPoints + randomPoints;
+            
+            try {
+                const userDocRef = doc(db, "users", activeUser.uid);
+                await setDoc(userDocRef, { points: newPoints }, { merge: true });
+
+                // เพิ่มประวัติสแกนหลอกๆ ในหน้า History แบบ Realtime (UI)
+                const histList = document.getElementById('history-list');
+                const today = new Date().toLocaleDateString('en-GB');
+                const titleText = currentLang === 'th' ? "แยกขยะอัจฉริยะ" : "Smart Bin Scan";
+                const newLog = `
+                <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
+                        <div><p class="font-bold text-gray-800 text-sm">${titleText}</p><p class="text-xs text-gray-400">${today}</p></div>
+                    </div>
+                    <div class="font-bold text-green-600">+${randomPoints} POINT</div>
+                </div>`;
+                histList.insertAdjacentHTML('afterbegin', newLog);
+
+                btnScan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">${translations[currentLang].simScan}</span>`;
+                btnScan.disabled = false;
+
+                const msg = currentLang === 'th' ? `คุณได้รับ ${randomPoints} คะแนนจากการคัดแยกขยะอย่างถูกต้อง!` : `You earned ${randomPoints} points for recycling correctly!`;
+                await window.showModal({ type: 'success', title: currentLang==='th'?'ยอดเยี่ยม!':'Awesome!', message: msg, confirmText: translations[currentLang].modalOk });
+                navigate('page-home');
+
+            } catch (err) {
+                console.error(err);
+                btnScan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">${translations[currentLang].simScan}</span>`;
+                btnScan.disabled = false;
+            }
+        }, 1500); // ดีเลย์ 1.5 วิ ให้เหมือน AI กำลังประมวลผล
+    };
+
     window.showStorePromo = async function(storeName) {
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         let promoMsg = "";
@@ -702,23 +907,26 @@
             if (unsubscribeSnapshot) unsubscribeSnapshot();
             const docRef = doc(db, "users", user.uid);
             unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
-                let userPoints = 0;
                 let userPhoto = "https://via.placeholder.com/150";
                 let userDisplayName = user.displayName || "หมูเด็งเด้งเองจ้า";
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.profileImage) userPhoto = data.profileImage;
-                    if (data.points !== undefined) userPoints = data.points;
+                    if (data.points !== undefined) userCurrentPoints = data.points; // อัปเดตตัวแปร global
                     if (data.displayName) userDisplayName = data.displayName;
                 }
 
                 document.getElementById('home-profile-pic').src = userPhoto;
                 document.getElementById('edit-profile-pic').src = userPhoto;
-                document.getElementById('user-points-home').textContent = userPoints.toLocaleString();
-                document.getElementById('user-points-history').innerHTML = `${userPoints.toLocaleString()} <span class="text-lg">POINT</span>`;
+                document.getElementById('user-points-home').textContent = userCurrentPoints.toLocaleString();
+                document.getElementById('user-points-history').innerHTML = `${userCurrentPoints.toLocaleString()} <span class="text-lg">POINT</span>`;
                 document.getElementById('home-display-name').textContent = userDisplayName;
                 document.getElementById('edit-display-name').value = userDisplayName;
+
+                // อัปเดต Impact (100 แต้ม = 1 kg CO2 สมมติ)
+                const co2Saved = (userCurrentPoints * 0.01).toFixed(2);
+                document.getElementById('co2-saved').textContent = co2Saved;
             });
 
             if (isInitialLoad) {
@@ -812,13 +1020,12 @@
         e.preventDefault();
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         
-        // ================= เช็คข้อตกลงและเงื่อนไข (Terms Check) =================
         if (currentAuthMode === 'signup') {
             const termsChecked = document.getElementById('terms').checked;
             if (!termsChecked) {
                 const msg = currentLang === 'th' ? 'กรุณายอมรับข้อกำหนดและเงื่อนไขก่อนสมัครสมาชิก' : 'Please accept the terms and conditions to sign up.';
                 await window.showModal({ type: 'error', title: 'Error', message: msg, confirmText: 'OK' });
-                return; // หยุดการทำงานถ้ายังไม่ติ๊ก
+                return;
             }
         }
 
@@ -876,13 +1083,23 @@
                     const newPoints = currentPoints - cost;
                     await setDoc(userDocRef, { points: newPoints }, { merge: true });
                     
-                    const successMsg = currentLang === 'th' ? `แลกรางวัลสำเร็จ! หัก ${cost} คะแนน` : `Redemption successful! Deducted ${cost} points.`;
-                    const successTitle = currentLang === 'th' ? 'สำเร็จ!' : 'Success!';
-                    
+                    // สร้าง UI บาร์โค้ดส่งเข้าไปใน Modal
+                    const refCode = "BP-" + Math.floor(Math.random()*900000 + 100000);
+                    const barcodeHTML = `
+                        <div class="flex flex-col items-center justify-center my-2">
+                            <div class="bg-gray-100 p-4 rounded-xl inline-block border-2 border-gray-300">
+                                <i class="fa-solid fa-barcode text-6xl text-gray-800 tracking-tighter"></i><i class="fa-solid fa-barcode text-6xl text-gray-800 tracking-tighter"></i>
+                                <p class="font-mono text-xs tracking-[0.2em] mt-2 text-gray-800 font-bold">${refCode}</p>
+                            </div>
+                            <p class="text-sm mt-4 font-bold text-green-700">${translations[currentLang].redeemSuccessMsg}</p>
+                            <p class="text-xs text-gray-500 mt-1">${translations[currentLang].showCashier}</p>
+                        </div>
+                    `;
+
                     await window.showModal({
-                        type: 'success',
-                        title: successTitle,
-                        message: successMsg,
+                        type: 'barcode', // ประเภทใหม่ ซ่อนไอคอนกลม
+                        title: itemName,
+                        message: barcodeHTML,
                         confirmText: translations[currentLang].modalOk
                     });
                 } else {
@@ -918,7 +1135,7 @@
         else targetPage.classList.add('active');
 
         const bottomNav = document.getElementById('bottom-nav');
-        if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile' || targetPageId === 'page-article') {
+        if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile' || targetPageId === 'page-article' || targetPageId === 'page-scan') {
             bottomNav.classList.add('hidden');
         } else {
             bottomNav.classList.remove('hidden');
@@ -929,20 +1146,19 @@
     function updateBottomNavUI(activePageId) {
         document.querySelectorAll('#bottom-nav .nav-item').forEach(item => {
             item.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group text-gray-300';
-            item.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg';
-            item.querySelector('.nav-text').className = 'text-xs mt-1 nav-text group-hover:text-white';
+            item.querySelector('.icon-bg').className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg';
+            item.querySelector('.nav-text').className = 'text-[10px] mt-1 nav-text group-hover:text-white';
         });
 
-        const navMap = { 'page-home': 'nav-home', 'page-history': 'nav-history', 'page-rewards': 'nav-rewards', 'page-setting': 'nav-setting' };
+        const navMap = { 'page-home': 'nav-home', 'page-history': 'nav-history', 'page-market': 'nav-market', 'page-setting': 'nav-setting' };
         if (navMap[activePageId]) {
             const activeNav = document.getElementById(navMap[activePageId]);
             activeNav.className = 'flex flex-col items-center flex-1 cursor-pointer nav-item group';
-            activeNav.querySelector('.icon-bg').className = 'w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-10px]';
-            activeNav.querySelector('.nav-text').className = 'text-xs mt-1 font-semibold nav-text text-white';
+            activeNav.querySelector('.icon-bg').className = 'w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all duration-300 icon-bg bg-[#eaffea] text-[#1b3a24] shadow-md relative top-[-5px]';
+            activeNav.querySelector('.nav-text').className = 'text-[10px] mt-1 font-semibold nav-text text-white';
         }
     }
 
-    // ================= อัปเดตการค้นหาสถานที่ใกล้เคียง (อิงภาษาที่เลือก) =================
     window.findNearYou = async function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -950,8 +1166,6 @@
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
-                    
-                    // คำค้นหาใน Google Maps เปลี่ยนตามภาษา
                     const searchQuery = currentLang === 'th' ? 'จุดทิ้งขยะรีไซเคิล หรือ ร้านกาแฟ' : 'Recycling point or Cafe';
                     window.open(`https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}/@${lat},${lng},14z`, '_blank');
                 },
