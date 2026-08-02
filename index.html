@@ -142,7 +142,13 @@
         <div class="mt-6 mx-5">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="participating">Participating stores</h3>
             <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
-                <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700"><i class="fa-solid fa-location-dot"></i></div><p class="text-xs font-bold text-center mt-2 text-gray-800" data-i18n="nearYou">Near you</p></div>
+                <!-- เพิ่มฟังก์ชัน Geolocation ตรงปุ่ม Near You -->
+                <div class="flex-shrink-0 w-20 flex flex-col items-center cursor-pointer hover:opacity-80 transition" onclick="findNearYou()">
+                    <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <p class="text-xs font-bold text-center mt-2 text-gray-800" data-i18n="nearYou">Near you</p>
+                </div>
                 <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-[10px] text-center leading-tight">BREW<br>BLISS</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Brew Bliss</p></div>
                 <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-[10px] text-center leading-tight">Mini<br>MART</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Mini Mart</p></div>
             </div>
@@ -578,6 +584,37 @@
             activeNav.querySelector('.nav-text').className = 'text-xs mt-1 font-semibold nav-text text-white';
         }
     }
+
+    // ==========================================
+    // ฟังก์ชันดึงพิกัดและเปิด Google Maps
+    // ==========================================
+    window.findNearYou = function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // ค้นหาจุดรับขยะรีไซเคิลรอบๆ ตัว
+                    const mapsUrl = `https://www.google.com/maps/search/recycle/@${lat},${lng},15z`;
+                    window.open(mapsUrl, '_blank');
+                },
+                (error) => {
+                    if (error.code === 1) {
+                        alert("แอปพลิเคชันต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อค้นหาสถานที่ใกล้เคียงครับ");
+                    } else {
+                        alert("ไม่สามารถดึงตำแหน่งที่ตั้งได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง");
+                    }
+                },
+                {
+                    enableHighAccuracy: true, 
+                    timeout: 10000            
+                }
+            );
+        } else {
+            alert("อุปกรณ์หรือบราวเซอร์ของคุณไม่รองรับการระบุตำแหน่งครับ");
+        }
+    };
 </script>
 
 </body>
