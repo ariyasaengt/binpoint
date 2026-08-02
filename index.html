@@ -156,7 +156,6 @@
             </div>
         </div>
 
-        <!-- ระบบคอนเทนต์ Edutainment (เพิ่ม onclick ให้กดได้) -->
         <div class="mt-2 mx-5 mb-8">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="edutainment">Eco Knowledge & Community</h3>
             <div class="space-y-3">
@@ -251,16 +250,11 @@
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
             <p class="text-sm text-gray-500" data-i18n="rewardDesc">Redeem your points for eco-friendly items.</p>
         </div>
-        <div class="mx-5 grid grid-cols-2 gap-4">
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                <div class="w-full h-24 mb-3 flex items-center justify-center bg-green-50 rounded-xl">
-                    <i class="fa-solid fa-bag-shopping text-5xl text-green-400 drop-shadow-md"></i>
-                </div>
-                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag1">Eco Bag (Normal)</h3>
-                <p class="text-xs font-bold mt-1 text-orange-500">1,999 pts</p>
-                <button onclick="redeemReward('Eco Bag', 1999)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
-            </div>
+        
+        <!-- ขยายตารางของรางวัลให้หลากหลายขึ้น -->
+        <div class="mx-5 grid grid-cols-2 gap-4 pb-10">
             
+            <!-- รางวัลที่ 1 (8,000 points) -->
             <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
                 <div class="w-full h-24 mb-3 flex items-center justify-center bg-blue-50 rounded-xl">
                     <i class="fa-solid fa-suitcase-rolling text-5xl text-blue-400 drop-shadow-md"></i>
@@ -269,6 +263,57 @@
                 <p class="text-xs font-bold mt-1 text-orange-500">8,000 pts</p>
                 <button onclick="redeemReward('Premium Eco Bag', 8000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
             </div>
+
+            <!-- รางวัลที่ 2 (5,000 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-purple-50 rounded-xl">
+                    <i class="fa-solid fa-mug-hot text-5xl text-purple-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTumbler">Eco Tumbler</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">5,000 pts</p>
+                <button onclick="redeemReward('Eco Tumbler', 5000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+
+            <!-- รางวัลที่ 3 (1,999 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-green-50 rounded-xl">
+                    <i class="fa-solid fa-bag-shopping text-5xl text-green-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag1">Eco Bag (Normal)</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">1,999 pts</p>
+                <button onclick="redeemReward('Eco Bag (Normal)', 1999)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+            
+            <!-- รางวัลที่ 4 (1,000 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-yellow-50 rounded-xl">
+                    <i class="fa-solid fa-ticket text-5xl text-yellow-500 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemDiscount10">10% Store Discount</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">1,000 pts</p>
+                <button onclick="redeemReward('10% Store Discount', 1000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+
+            <!-- รางวัลที่ 5 (500 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-orange-50 rounded-xl">
+                    <i class="fa-solid fa-coffee text-5xl text-orange-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemCoffee">Coffee Discount</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">500 pts</p>
+                <button onclick="redeemReward('Coffee Discount', 500)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+
+            <!-- รางวัลที่ 6 (150 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-pink-50 rounded-xl">
+                    <i class="fa-solid fa-ice-cream text-5xl text-pink-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemTopping">Free Topping</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">150 pts</p>
+                <button onclick="redeemReward('Free Topping', 150)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+
         </div>
     </div>
 
@@ -356,6 +401,7 @@
     let isInitialLoad = true;
     let unsubscribeSnapshot = null; 
 
+    // เพิ่มคำแปลสำหรับของรางวัลใหม่
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
@@ -390,6 +436,10 @@
             rewardDesc: "Redeem your points for eco-friendly items.",
             itemBag1: "Eco Bag (Normal)",
             itemBag2: "Eco Bag (Premium)",
+            itemTumbler: "Eco Tumbler",
+            itemDiscount10: "10% Store Discount",
+            itemCoffee: "Coffee Discount",
+            itemTopping: "Free Topping",
             btnRedeem: "Redeem",
             settings: "Settings",
             btnLogout: "Log Out",
@@ -436,6 +486,10 @@
             rewardDesc: "นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ",
             itemBag1: "กระเป๋ารักษ์โลก (ธรรมดา)",
             itemBag2: "กระเป๋ารักษ์โลก (พรีเมียม)",
+            itemTumbler: "แก้วน้ำรักษ์โลก",
+            itemDiscount10: "ส่วนลด 10% ร้านค้า",
+            itemCoffee: "คูปองส่วนลดร้านกาแฟ",
+            itemTopping: "ฟรีท็อปปิ้งเครื่องดื่ม",
             btnRedeem: "แลกรางวัล",
             settings: "การตั้งค่า",
             btnLogout: "ออกจากระบบ",
@@ -451,7 +505,6 @@
         }
     };
 
-    // ข้อมูลบทความ
     const articleData = {
         en: {
             1: {
@@ -733,7 +786,6 @@
         else targetPage.classList.add('active');
 
         const bottomNav = document.getElementById('bottom-nav');
-        // ซ่อนเมนูด้านล่างตอนอ่านบทความ (page-article) เพื่อให้อ่านได้เต็มจอ
         if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile' || targetPageId === 'page-article') {
             bottomNav.classList.add('hidden');
         } else {
