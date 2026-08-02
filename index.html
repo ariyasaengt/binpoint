@@ -586,7 +586,7 @@
     }
 
     // ==========================================
-    // ฟังก์ชันดึงพิกัดและเปิด Google Maps
+    // ฟังก์ชันดึงพิกัดและเปิด Google Maps (อัปเดตใหม่)
     // ==========================================
     window.findNearYou = function() {
         if (navigator.geolocation) {
@@ -595,8 +595,8 @@
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
-                    // ค้นหาจุดรับขยะรีไซเคิลรอบๆ ตัว
-                    const mapsUrl = `https://www.google.com/maps/search/recycle/@${lat},${lng},15z`;
+                    // อัปเดตโค้ด: ส่งพิกัดตรงๆ เพื่อปักหมุดตำแหน่งของผู้ใช้
+                    const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
                     window.open(mapsUrl, '_blank');
                 },
                 (error) => {
