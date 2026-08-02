@@ -91,7 +91,7 @@
 
             <form id="auth-form" class="space-y-5">
                 <div id="field-username" class="hidden">
-                    <input type="text" id="username" data-i18n="phUsername" placeholder="Username (for new user)" class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
+                    <input type="text" id="username" data-i18n="phUsername" placeholder="Username (e.g. หมูเด็งเด้งเองจ้า)" class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 </div>
                 <input type="email" id="email" data-i18n="phEmail" placeholder="Email (Gmail)" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
                 <input type="password" id="password" data-i18n="phPassword" placeholder="Password" required class="w-full px-5 py-3.5 rounded-full outline-none shadow-sm text-gray-700 font-medium">
@@ -115,7 +115,7 @@
                 <img id="home-profile-pic" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
             </div>
             <div class="ml-4 truncate">
-                <h1 id="home-display-name" class="text-xl font-bold text-gray-800 truncate">New User</h1>
+                <h1 id="home-display-name" class="text-xl font-bold text-gray-800 truncate">หมูเด็งเด้งเองจ้า</h1>
                 <p class="text-sm text-gray-500" data-i18n="profile">Profile &gt;</p>
             </div>
         </div>
@@ -127,7 +127,6 @@
             <div class="ml-4">
                 <div class="flex items-baseline">
                     <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
-                    <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
                     <span id="user-points-home" class="text-2xl font-bold text-gray-800">0</span>
                     <span class="text-lg font-bold text-gray-800 ml-1" data-i18n="points">points</span>
                 </div>
@@ -135,15 +134,15 @@
             </div>
         </div>
         
-        <!-- รูปแบบแบนเนอร์ใหม่ -->
+        <!-- รูปแบบแบนเนอร์ -->
         <div class="mx-5 mt-6 rounded-2xl overflow-hidden shadow-md min-h-[120px] bg-gray-100 flex items-center justify-center">
             <img src="https://i.postimg.cc/v15ffZxN/Binpoint-Every-point-adds-up-and-every-reward-leaves-an-impact.png" alt="Binpoint Banner" class="w-full h-auto object-cover">
         </div>
         
+        <!-- ร้านค้าพันธมิตร -->
         <div class="mt-6 mx-5">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="participating">Participating stores</h3>
             <div class="flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
-                <!-- เพิ่มฟังก์ชัน Geolocation ตรงปุ่ม Near You -->
                 <div class="flex-shrink-0 w-20 flex flex-col items-center cursor-pointer hover:opacity-80 transition" onclick="findNearYou()">
                     <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl text-gray-700">
                         <i class="fa-solid fa-location-dot"></i>
@@ -152,6 +151,27 @@
                 </div>
                 <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-orange-100 rounded-2xl shadow-sm flex items-center justify-center text-[#8b3a3a] font-serif font-bold text-[10px] text-center leading-tight">BREW<br>BLISS</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Brew Bliss</p></div>
                 <div class="flex-shrink-0 w-20 flex flex-col items-center"><div class="w-16 h-16 bg-blue-700 rounded-2xl shadow-sm flex items-center justify-center text-white font-serif font-bold text-[10px] text-center leading-tight">Mini<br>MART</div><p class="text-xs font-bold text-center mt-2 text-gray-800">Mini Mart</p></div>
+            </div>
+        </div>
+
+        <!-- ระบบคอนเทนต์ Edutainment -->
+        <div class="mt-2 mx-5 mb-8">
+            <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="edutainment">Eco Knowledge & Community</h3>
+            <div class="space-y-3">
+                <div class="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
+                    <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center text-green-500 text-2xl"><i class="fa-solid fa-leaf"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle1">5 วิธีแยกขยะที่บ้านง่ายๆ</h4>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc1">เปลี่ยนพฤติกรรมเล็กๆ เพื่อโลกของเรา...</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-blue-500 text-2xl"><i class="fa-solid fa-recycle"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-800" data-i18n="eduTitle2">ขยะพลาสติกไปไหนต่อ?</h4>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="eduDesc2">แชร์ความรู้เรื่องการรีไซเคิลในชุมชน...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -174,7 +194,6 @@
             
             <div class="w-full bg-white p-6 rounded-[2rem] shadow-sm">
                 <label class="block text-sm font-bold text-gray-700 mb-2 pl-2" data-i18n="displayName">Display Name</label>
-                <!-- ช่องกรอกชื่อแสดงผล (จะถูกดึงมาจากระบบและใส่ไว้ที่นี่) -->
                 <input type="text" id="edit-display-name" class="w-full px-5 py-3.5 rounded-full border-2 border-gray-100 outline-none focus:border-green-400 focus:bg-green-50 transition mb-8 text-gray-800 font-medium">
                 
                 <button id="btn-save-profile" class="w-full bg-[#1b3a24] text-white font-bold py-4 rounded-full shadow-md hover:bg-green-900 transition text-lg flex justify-center items-center">
@@ -190,7 +209,8 @@
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="pointHistory">Point History</h1>
             <p class="text-sm text-gray-500" data-i18n="historyDesc">See how you earned your points</p>
         </div>
-        <div class="mx-5 mb-6 bg-white rounded-2xl p-4 shadow-sm flex items-center">
+        
+        <div class="mx-5 mb-4 bg-white rounded-2xl p-4 shadow-sm flex items-center">
             <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
@@ -198,35 +218,77 @@
                 <span id="user-points-history" class="text-2xl font-bold text-gray-800">0 <span class="text-lg">POINT</span></span>
             </div>
         </div>
+
+        <!-- AI Notification แจ้งเตือนวันหมดอายุคะแนน -->
+        <div class="mx-5 mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+            <i class="fa-solid fa-robot text-yellow-500 text-xl mt-0.5"></i>
+            <div>
+                <p class="text-sm font-bold text-yellow-700" data-i18n="aiAlert">AI Notification</p>
+                <p class="text-xs text-yellow-600 mt-1 leading-relaxed" data-i18n="aiDesc">คะแนนของคุณมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!</p>
+            </div>
+        </div>
+
         <div class="mx-5 space-y-3">
+            <!-- ประวัติการได้และเสียคะแนนแบบรายวัน (จำลองตามเอกสาร) -->
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-gift"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p><p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p></div>
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">20/05/2024</p></div>
                 </div>
-                <div class="font-bold text-orange-500">+500</div>
+                <div class="font-bold text-green-600">+133 POINT</div>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center hidden">
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-bottle-water"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="recyclePlastic">Recycled Plastic</p><p class="text-xs text-gray-400">Today, 10:30 AM</p></div>
+                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-minus"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">Redeemed reward</p><p class="text-xs text-gray-400">29/04/2024</p></div>
                 </div>
-                <div class="font-bold text-green-600">+133</div>
+                <div class="font-bold text-red-600">-67 POINT</div>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">16/04/2024</p></div>
+                </div>
+                <div class="font-bold text-green-600">+99 POINT</div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-plus"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">You've earned points</p><p class="text-xs text-gray-400">20/03/2024</p></div>
+                </div>
+                <div class="font-bold text-green-600">+48 POINT</div>
             </div>
         </div>
     </div>
 
-    <!-- ================= 6. หน้ารางวัล (Rewards) ================= -->
+    <!-- ================= 6. หน้ารางวัล (Rewards & Redemption) ================= -->
     <div id="page-rewards" class="page bg-gradient-to-b from-[#eaffea] to-[#d3f3d3]">
         <div class="p-6 pt-10">
             <h1 class="text-2xl font-bold text-gray-800" data-i18n="rewards">Rewards</h1>
+            <p class="text-sm text-gray-500" data-i18n="rewardDesc">นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ</p>
         </div>
         <div class="mx-5 grid grid-cols-2 gap-4">
-            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm">
-                <div class="w-20 h-20 mb-2 flex items-center justify-center bg-blue-50 rounded-full"><i class="fa-solid fa-shirt text-4xl text-blue-400"></i></div>
-                <h3 class="text-md font-bold text-gray-800 text-center" data-i18n="itemShirt">Eco T-Shirt</h3>
-                <p class="text-sm font-bold mt-1 text-orange-500">2,000 pts</p>
-                <button class="mt-3 w-full bg-green-500 text-white text-xs font-bold py-2 rounded-full hover:bg-green-600" data-i18n="btnRedeem">Redeem</button>
+            <!-- กระเป๋าที่ 1 (1,999 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-green-50 rounded-xl">
+                    <i class="fa-solid fa-bag-shopping text-5xl text-green-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag1">Eco Bag (Normal)</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">1,999 pts</p>
+                <button onclick="redeemReward('Eco Bag', 1999)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
+            </div>
+            
+            <!-- กระเป๋าที่ 2 (8,000 points) -->
+            <div class="flex flex-col items-center bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                <div class="w-full h-24 mb-3 flex items-center justify-center bg-blue-50 rounded-xl">
+                    <i class="fa-solid fa-suitcase-rolling text-5xl text-blue-400 drop-shadow-md"></i>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800 text-center" data-i18n="itemBag2">Eco Bag (Premium)</h3>
+                <p class="text-xs font-bold mt-1 text-orange-500">8,000 pts</p>
+                <button onclick="redeemReward('Premium Eco Bag', 8000)" class="mt-3 w-full bg-[#1b3a24] text-white text-xs font-bold py-2.5 rounded-full shadow-md hover:bg-green-900 transition" data-i18n="btnRedeem">Redeem</button>
             </div>
         </div>
     </div>
@@ -277,7 +339,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCsPddup_nVl0LAWLhL3Tcba5pYKdZDx_A",
@@ -307,7 +369,7 @@
             welcome: "Welcome",
             tabLogin: "Login",
             tabSignup: "Sign up",
-            phUsername: "Username (for new user)",
+            phUsername: "Username (e.g. หมูเด็งเด้งเองจ้า)",
             phEmail: "Email (Gmail)",
             phPassword: "Password",
             terms: "I accept the terms and conditions",
@@ -325,18 +387,24 @@
             navSetting: "Setting",
             pointHistory: "Point History",
             historyDesc: "See how you earned your points",
-            welcomeBonus: "Welcome Bonus",
-            newAccount: "New Account",
-            recyclePlastic: "Recycled Plastic",
+            aiAlert: "AI Notification",
+            aiDesc: "Your points are valid for 90 days. <br>Your points will expire in 89 days, redeem now!",
             rewards: "Rewards",
-            itemShirt: "Eco T-Shirt",
+            rewardDesc: "Redeem your points for eco-friendly items.",
+            itemBag1: "Eco Bag (Normal)",
+            itemBag2: "Eco Bag (Premium)",
             btnRedeem: "Redeem",
             settings: "Settings",
             btnLogout: "Log Out",
             editProfile: "Edit Profile",
             displayName: "Display Name",
             saveChanges: "Save Changes",
-            saving: "Saving..."
+            saving: "Saving...",
+            edutainment: "Eco Knowledge & Community",
+            eduTitle1: "5 Easy Home Recycling Tips",
+            eduDesc1: "Small changes for our planet...",
+            eduTitle2: "Where does plastic go?",
+            eduDesc2: "Share knowledge in our community..."
         },
         th: {
             slogan: "ทุกคะแนนมีความหมาย ทุกรางวัลมีค่า",
@@ -345,7 +413,7 @@
             welcome: "ยินดีต้อนรับ",
             tabLogin: "เข้าสู่ระบบ",
             tabSignup: "สมัครสมาชิก",
-            phUsername: "ชื่อผู้ใช้ (สำหรับสมัครใหม่)",
+            phUsername: "ชื่อผู้ใช้ (เช่น หมูเด็งเด้งเองจ้า)",
             phEmail: "อีเมล (Gmail)",
             phPassword: "รหัสผ่าน",
             terms: "ยอมรับข้อกำหนดและเงื่อนไข",
@@ -363,18 +431,24 @@
             navSetting: "ตั้งค่า",
             pointHistory: "ประวัติคะแนน",
             historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
-            welcomeBonus: "โบนัสต้อนรับ",
-            newAccount: "เปิดบัญชีใหม่",
-            recyclePlastic: "รีไซเคิลพลาสติก",
+            aiAlert: "AI แจ้งเตือนอัจฉริยะ",
+            aiDesc: "คะแนนมีอายุ 90 วันหลังจากได้รับ <br>คะแนนของคุณกำลังจะหมดอายุในอีก 89 วัน รีบนำไปแลกของรางวัลนะ!",
             rewards: "ของรางวัล",
-            itemShirt: "เสื้อยืดรักษ์โลก",
+            rewardDesc: "นำพอยต์มาแลกของรางวัลรักษ์โลกกันเถอะ",
+            itemBag1: "กระเป๋ารักษ์โลก (ธรรมดา)",
+            itemBag2: "กระเป๋ารักษ์โลก (พรีเมียม)",
             btnRedeem: "แลกรางวัล",
             settings: "การตั้งค่า",
             btnLogout: "ออกจากระบบ",
             editProfile: "แก้ไขโปรไฟล์",
             displayName: "ชื่อที่แสดง",
             saveChanges: "บันทึกการเปลี่ยนแปลง",
-            saving: "กำลังบันทึก..."
+            saving: "กำลังบันทึก...",
+            edutainment: "คอมมูนิตี้และความรู้รักษ์โลก",
+            eduTitle1: "5 วิธีแยกขยะที่บ้านง่ายๆ",
+            eduDesc1: "เปลี่ยนพฤติกรรมเล็กๆ เพื่อโลกของเรา...",
+            eduTitle2: "ขยะพลาสติกไปไหนต่อ?",
+            eduDesc2: "แชร์ความรู้เรื่องการรีไซเคิลในชุมชน..."
         }
     };
 
@@ -419,41 +493,31 @@
     setLanguage('en');
     setAuthMode('login');
 
-    // ==========================================
-    // ตรวจสอบสถานะและตั้งค่า Real-time Listener (onSnapshot)
-    // ดึง Display Name ทั้งจาก Auth และ Firestore เพื่อความชัวร์
-    // ==========================================
     onAuthStateChanged(auth, (user) => {
         if (user) {
             activeUser = user;
 
-            if (unsubscribeSnapshot) {
-                unsubscribeSnapshot();
-            }
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
 
             const docRef = doc(db, "users", user.uid);
             unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
                 let userPoints = 0;
                 let userPhoto = "https://via.placeholder.com/150";
-                // ใช้ชื่อจาก Auth เป็นค่าตั้งต้น
-                let userDisplayName = user.displayName || "User";
+                let userDisplayName = user.displayName || "หมูเด็งเด้งเองจ้า"; // ค่าเริ่มต้นตามเอกสาร
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.profileImage) userPhoto = data.profileImage;
                     if (data.points !== undefined) userPoints = data.points;
-                    
-                    // หากใน Firestore มีบันทึกชื่อไว้ตอนสมัคร ให้ใช้ชื่อจาก Firestore เพื่อความถูกต้อง 100%
                     if (data.displayName) userDisplayName = data.displayName;
                 }
 
-                // อัปเดต UI ทุกจุด (รวมถึงหน้าแก้ไขโปรไฟล์) ทันที
+                // อัปเดต UI Real-time
                 document.getElementById('home-profile-pic').src = userPhoto;
                 document.getElementById('edit-profile-pic').src = userPhoto;
-                document.getElementById('user-points-home').textContent = userPoints;
-                document.getElementById('user-points-history').innerHTML = `${userPoints} <span class="text-lg">POINT</span>`;
+                document.getElementById('user-points-home').textContent = userPoints.toLocaleString();
+                document.getElementById('user-points-history').innerHTML = `${userPoints.toLocaleString()} <span class="text-lg">POINT</span>`;
                 
-                // อัปเดตชื่อผู้ใช้
                 document.getElementById('home-display-name').textContent = userDisplayName;
                 document.getElementById('edit-display-name').value = userDisplayName;
             });
@@ -468,12 +532,9 @@
                 unsubscribeSnapshot();
                 unsubscribeSnapshot = null;
             }
-            
             if (isInitialLoad) {
                 setTimeout(() => {
-                    if(document.getElementById('page-splash').classList.contains('active')) {
-                        navigate('page-signup');
-                    }
+                    if(document.getElementById('page-splash').classList.contains('active')) navigate('page-signup');
                 }, 2500);
                 isInitialLoad = false;
             }
@@ -489,7 +550,6 @@
         reader.onload = function(e) {
             const img = new Image();
             img.src = e.target.result;
-            
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 200; 
@@ -514,12 +574,8 @@
         }
     }
 
-    // ==========================================
-    // อัปเดตการบันทึกโปรไฟล์ ให้บันทึกชื่อลง Firestore ด้วย
-    // ==========================================
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
         if (!activeUser) return;
-        
         const newDisplayName = document.getElementById('edit-display-name').value;
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         const btnSave = document.getElementById('btn-save-profile');
@@ -530,27 +586,19 @@
             btnSave.disabled = true;
 
             const updateTasks = [];
-
-            // อัปเดตใน Firebase Auth
             if (activeUser.displayName !== newDisplayName) {
                 updateTasks.push(updateProfile(activeUser, { displayName: newDisplayName }));
             }
 
-            // บังคับบันทึกชื่อ (และรูปถ้ามี) ลงใน Firestore ด้วย เพื่อให้ข้อมูลตรงกัน 100%
             const userDocRef = doc(db, "users", activeUser.uid);
             let updateData = { displayName: newDisplayName };
-            if (tempPhotoDataURL) {
-                updateData.profileImage = tempPhotoDataURL;
-            }
+            if (tempPhotoDataURL) updateData.profileImage = tempPhotoDataURL;
+            
             updateTasks.push(setDoc(userDocRef, updateData, { merge: true }));
-
-            if (updateTasks.length > 0) {
-                await Promise.all(updateTasks); 
-            }
+            if (updateTasks.length > 0) await Promise.all(updateTasks); 
             
             tempPhotoDataURL = null; 
             navigate('page-home');
-
         } catch (error) {
             alert("เกิดข้อผิดพลาด: " + error.message);
         } finally {
@@ -563,48 +611,75 @@
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const usernameInput = document.getElementById('username').value || "New User";
+        const usernameInput = document.getElementById('username').value || "หมูเด็งเด้งเองจ้า";
         
         if (currentAuthMode === 'login') {
             signInWithEmailAndPassword(auth, email, password)
-                .then(() => { navigate('page-home'); })
+                .then(() => navigate('page-home'))
                 .catch(() => alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง"));
         } else {
-            // โหมดสมัครสมาชิก
             createUserWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => { 
                     const user = userCredential.user;
-                    
-                    // 1. อัปเดตชื่อโปรไฟล์ใน Auth
                     await updateProfile(user, { displayName: usernameInput });
-                    
-                    // 2. สร้างเอกสารพร้อมบันทึก displayName และโบนัส 500 พอยต์
                     const userDocRef = doc(db, "users", user.uid);
                     await setDoc(userDocRef, { 
-                        displayName: usernameInput, // บันทึกชื่อตอนสมัคลงฐานข้อมูลทันที
-                        points: 500 
+                        displayName: usernameInput,
+                        points: 500 // โบนัสต้อนรับ
                     }, { merge: true });
-
                     navigate('page-home');
                 })
                 .catch((error) => alert("เกิดข้อผิดพลาด: " + error.message));
         }
     });
 
+    // ==========================================
+    // ระบบตัดคะแนนเมื่อกดแลกของรางวัล
+    // ==========================================
+    window.redeemReward = async function(itemName, cost) {
+        if (!activeUser) return;
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        
+        // ยืนยันก่อนแลก
+        const confirmMsg = currentLang === 'th' ? `คุณต้องการใช้ ${cost} คะแนน เพื่อแลก ${itemName} หรือไม่?` : `Do you want to use ${cost} points to redeem ${itemName}?`;
+        if (!confirm(confirmMsg)) return;
+
+        try {
+            const userDocRef = doc(db, "users", activeUser.uid);
+            const docSnap = await getDoc(userDocRef);
+            
+            if (docSnap.exists()) {
+                const currentPoints = docSnap.data().points || 0;
+                
+                if (currentPoints >= cost) {
+                    const newPoints = currentPoints - cost;
+                    // ตัดคะแนนในฐานข้อมูล (Real-time snapshot จะทำงานและอัปเดตตัวเลขหน้าจอเอง)
+                    await setDoc(userDocRef, { points: newPoints }, { merge: true });
+                    
+                    const successMsg = currentLang === 'th' ? `แลกรางวัลสำเร็จ! หัก ${cost} คะแนน` : `Redemption successful! Deducted ${cost} points.`;
+                    alert(successMsg);
+                } else {
+                    const failMsg = currentLang === 'th' ? "คะแนนของคุณไม่เพียงพอ!" : "Not enough points!";
+                    alert(failMsg);
+                }
+            }
+        } catch (error) {
+            console.error("Redeem Error: ", error);
+            alert("เกิดข้อผิดพลาดในการแลกรางวัล กรุณาลองใหม่");
+        }
+    };
+
     window.logoutApp = function() {
         signOut(auth).then(() => {
             document.getElementById('email').value = "";
             document.getElementById('password').value = "";
             navigate('page-signup');
-        }).catch((error) => {
-            console.error("Logout Error:", error);
-        });
+        }).catch((error) => console.error("Logout Error:", error));
     };
 
     window.navigate = function(targetPageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active', 'page-flex'));
         const targetPage = document.getElementById(targetPageId);
-        
         if (targetPageId === 'page-splash') targetPage.classList.add('active', 'page-flex'); 
         else targetPage.classList.add('active');
 
@@ -639,20 +714,10 @@
                 (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-                    window.open(mapsUrl, '_blank');
+                    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
                 },
-                (error) => {
-                    if (error.code === 1) {
-                        alert("แอปพลิเคชันต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อค้นหาสถานที่ใกล้เคียงครับ");
-                    } else {
-                        alert("ไม่สามารถดึงตำแหน่งที่ตั้งได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง");
-                    }
-                },
-                {
-                    enableHighAccuracy: true, 
-                    timeout: 10000            
-                }
+                (error) => alert("แอปพลิเคชันต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อค้นหาสถานที่ใกล้เคียงครับ"),
+                { enableHighAccuracy: true, timeout: 10000 }
             );
         } else {
             alert("อุปกรณ์หรือบราวเซอร์ของคุณไม่รองรับการระบุตำแหน่งครับ");
