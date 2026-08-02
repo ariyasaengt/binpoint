@@ -300,10 +300,10 @@
 
             <div class="mx-5">
                 <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="topRecyclers">Top Recyclers this week</h3>
-                <!-- คอนเทนเนอร์แสดงข้อมูลจริงจาก Firebase -->
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden" id="leaderboard-container">
                     <div class="p-6 text-center text-gray-500">
                         <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+                        <p class="mt-2 text-xs">Loading...</p>
                     </div>
                 </div>
             </div>
@@ -491,7 +491,6 @@
 </div>
 
 <!-- ================= สคริปต์การทำงาน ================= -->
-<!-- เพิ่มฟังก์ชัน increment, collection, query, orderBy, limit, getDocs สำหรับจัดการฐานข้อมูลแบบเรียลไทม์ -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -725,33 +724,53 @@
         });
     }
 
-    // ฟังก์ชันสำหรับดึงข้อมูลกระดานผู้นำ (Leaderboard) จาก Firebase แบบเรียลไทม์
+    // ================= อัปเดตการดึงข้อมูล Leaderboard 1, 2, 3 =================
     window.loadLeaderboard = async function() {
         const container = document.getElementById('leaderboard-container');
         container.innerHTML = `<div class="p-6 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-2xl"></i><p class="mt-2 text-xs">Loading...</p></div>`;
 
         try {
-            // ค้นหาข้อมูลจากคอลเล็กชัน users เรียงลำดับแต้มมากไปน้อย ดึงมา 10 อันดับ
+            // ดึงข้อมูลจริงจาก DB
             const q = query(collection(db, "users"), orderBy("points", "desc"), limit(10));
             const querySnapshot = await getDocs(q);
             
-            let html = "";
-            let rank = 1;
-
+            let users = [];
             querySnapshot.forEach((doc) => {
-                const data = doc.data();
+                users.push(doc.data());
+            });
+
+            // รายชื่อผู้แข่งจำลอง (เพื่อเติมให้ครบ 1, 2, 3 หาก DB มีผู้ใช้น้อยกว่า 3 คน)
+            const fallbackMocks = [
+                { displayName: "GreenLover99", points: 520, profileImage: "https://i.pravatar.cc/150?img=3" },
+                { displayName: "SaveTheEarth", points: 350, profileImage: "https://i.pravatar.cc/150?img=5" },
+                { displayName: "EcoHero_TH", points: 210, profileImage: "https://i.pravatar.cc/150?img=8" }
+            ];
+
+            // เติมให้ครบอย่างน้อย 3 อันดับ
+            let mockIndex = 0;
+            while (users.length < 3 && mockIndex < fallbackMocks.length) {
+                if (!users.some(u => u.displayName === fallbackMocks[mockIndex].displayName)) {
+                    users.push(fallbackMocks[mockIndex]);
+                }
+                mockIndex++;
+            }
+
+            // เรียงลำดับแต้มอีกครั้งเพื่อความถูกต้อง
+            users.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+            let html = "";
+            users.forEach((data, index) => {
+                const rank = index + 1;
                 const name = data.displayName || "Unknown User";
                 const points = data.points || 0;
-                // หากไม่มีรูปโปรไฟล์ให้ใช้รูปว่างแทน
                 const img = data.profileImage || "https://via.placeholder.com/150";
 
                 let bgClass = "bg-white";
-                let rankClass = "text-gray-400";
+                let rankClass = "text-gray-400 font-bold";
                 
-                // กำหนดสไตล์ให้ 3 อันดับแรก
-                if (rank === 1) { bgClass = "bg-yellow-50"; rankClass = "text-yellow-500"; }
-                else if (rank === 2) { bgClass = "bg-gray-50"; rankClass = "text-gray-400"; }
-                else if (rank === 3) { bgClass = "bg-orange-50"; rankClass = "text-orange-400"; }
+                if (rank === 1) { bgClass = "bg-yellow-50"; rankClass = "text-yellow-500 font-extrabold"; }
+                else if (rank === 2) { bgClass = "bg-gray-50"; rankClass = "text-gray-400 font-extrabold"; }
+                else if (rank === 3) { bgClass = "bg-orange-50"; rankClass = "text-orange-400 font-extrabold"; }
 
                 html += `
                 <div class="p-4 border-b flex items-center ${bgClass}">
@@ -762,12 +781,8 @@
                     <span class="ml-3 font-bold text-gray-800 flex-1 truncate">${name}</span>
                     <span class="font-bold text-green-600">${points.toLocaleString()} pts</span>
                 </div>`;
-                rank++;
             });
 
-            if(html === "") {
-                html = '<div class="p-6 text-center text-gray-500 text-sm">No data available</div>';
-            }
             container.innerHTML = html;
 
         } catch (error) {
@@ -792,7 +807,6 @@
             histBtn.className = "flex-1 py-2 text-sm font-bold text-gray-500 hover:text-[#1b3a24] rounded-full transition-all";
             secLead.classList.remove('hidden');
             secHist.classList.add('hidden');
-            // รีเฟรชข้อมูลผู้นำเมื่อกดแท็บ Leaderboard
             loadLeaderboard(); 
         }
     };
@@ -810,8 +824,6 @@
             
             try {
                 const userDocRef = doc(db, "users", activeUser.uid);
-                
-                // ใช้คำสั่ง increment ของ Firebase เพื่อให้แต้มอัปเดตแม่นยำ ไม่ว่าจะเปิดใช้งานกี่เครื่อง
                 await setDoc(userDocRef, { points: increment(randomPoints) }, { merge: true });
 
                 const histList = document.getElementById('history-list');
@@ -931,7 +943,6 @@
             if (unsubscribeSnapshot) unsubscribeSnapshot();
             const docRef = doc(db, "users", user.uid);
             
-            // onSnapshot จะรับข้อมูลล่าสุดจากเซิร์ฟเวอร์แบบ Realtime เสมอ
             unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
                 let userPhoto = "https://via.placeholder.com/150";
                 let userDisplayName = user.displayName || "หมูเด็งเด้งเองจ้า";
@@ -1106,7 +1117,6 @@
                 const currentPoints = docSnap.data().points || 0;
                 
                 if (currentPoints >= cost) {
-                    // ใช้คำสั่ง increment เพื่อหักลบแต้มแม่นยำขึ้นจากหลังบ้าน
                     await setDoc(userDocRef, { points: increment(-cost) }, { merge: true });
                     
                     const refCode = "BP-" + Math.floor(Math.random()*900000 + 100000);
