@@ -127,7 +127,8 @@
             <div class="ml-4">
                 <div class="flex items-baseline">
                     <span class="text-gray-500 text-sm mr-1" data-i18n="youHave">You have</span>
-                    <span class="text-2xl font-bold text-gray-800">555</span>
+                    <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
+                    <span id="user-points-home" class="text-2xl font-bold text-gray-800">0</span>
                     <span class="text-lg font-bold text-gray-800 ml-1" data-i18n="points">points</span>
                 </div>
                 <p class="text-xs text-gray-500" data-i18n="collectMore">Collect more to redeem rewards.</p>
@@ -193,11 +194,21 @@
                 <i class="fa-solid fa-trash-can"></i>
             </div>
             <div class="ml-4">
-                <span class="text-2xl font-bold text-gray-800">555 <span class="text-lg">POINT</span></span>
+                <!-- ตั้งค่าเริ่มต้นเป็น 0 และใส่ id ไว้เพื่อให้ JS มาอัปเดต -->
+                <span id="user-points-history" class="text-2xl font-bold text-gray-800">0 <span class="text-lg">POINT</span></span>
             </div>
         </div>
         <div class="mx-5 space-y-3">
+            <!-- โชว์รายการแจกโบนัสต้อนรับในประวัติ -->
             <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-gift"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p><p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p></div>
+                </div>
+                <div class="font-bold text-orange-500">+500</div>
+            </div>
+            <!-- ประวัติการทิ้งขยะ -->
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center hidden">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-bottle-water"></i></div>
                     <div><p class="font-bold text-gray-800 text-sm" data-i18n="recyclePlastic">Recycled Plastic</p><p class="text-xs text-gray-400">Today, 10:30 AM</p></div>
@@ -290,6 +301,7 @@
     let tempPhotoDataURL = null; 
     let isInitialLoad = true; 
 
+    // เพิ่มคำแปลภาษาสำหรับ Welcome Bonus
     const translations = {
         en: {
             slogan: "Every point counts, every reward matters.",
@@ -316,6 +328,8 @@
             navSetting: "Setting",
             pointHistory: "Point History",
             historyDesc: "See how you earned your points",
+            welcomeBonus: "Welcome Bonus",
+            newAccount: "New Account",
             recyclePlastic: "Recycled Plastic",
             rewards: "Rewards",
             itemShirt: "Eco T-Shirt",
@@ -352,6 +366,8 @@
             navSetting: "ตั้งค่า",
             pointHistory: "ประวัติคะแนน",
             historyDesc: "ดูที่มาของคะแนนสะสมของคุณ",
+            welcomeBonus: "โบนัสต้อนรับ",
+            newAccount: "เปิดบัญชีใหม่",
             recyclePlastic: "รีไซเคิลพลาสติก",
             rewards: "ของรางวัล",
             itemShirt: "เสื้อยืดรักษ์โลก",
@@ -418,18 +434,27 @@
             document.getElementById('edit-display-name').value = displayName;
 
             let userPhoto = "https://via.placeholder.com/150"; 
+            let userPoints = 0; // ตั้งค่าเริ่มต้นพอยต์เป็น 0
+
             try {
+                // ดึงข้อมูลผู้ใช้จาก Firestore
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().profileImage) {
-                    userPhoto = docSnap.data().profileImage;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.profileImage) userPhoto = data.profileImage;
+                    // ถ้ามีพอยต์อยู่ในระบบ ให้ดึงมาแสดงผล ถ้าไม่มีจะใช้ 0 อัตโนมัติ
+                    if (data.points !== undefined) userPoints = data.points;
                 }
             } catch (error) {
-                console.log("No profile image found in DB");
+                console.log("No extra user data found in DB");
             }
 
+            // อัปเดต UI 
             document.getElementById('home-profile-pic').src = userPhoto;
             document.getElementById('edit-profile-pic').src = userPhoto;
+            document.getElementById('user-points-home').textContent = userPoints;
+            document.getElementById('user-points-history').innerHTML = `${userPoints} <span class="text-lg">POINT</span>`;
 
             if (isInitialLoad) {
                 navigate('page-home');
@@ -524,20 +549,36 @@
         }
     });
 
+    // ==========================================
+    // อัปเดตระบบสมัครสมาชิกเพื่อแจก 500 พอยต์
+    // ==========================================
     document.getElementById('auth-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const usernameInput = document.getElementById('username').value || "New User";
         
         if (currentAuthMode === 'login') {
             signInWithEmailAndPassword(auth, email, password)
                 .then(() => { navigate('page-home'); })
                 .catch(() => alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง"));
         } else {
+            // โหมดสมัครสมาชิก
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => { 
-                    updateProfile(userCredential.user, { displayName: document.getElementById('username').value })
-                        .then(() => navigate('page-home'));
+                .then(async (userCredential) => { 
+                    const user = userCredential.user;
+                    
+                    // 1. อัปเดตชื่อโปรไฟล์
+                    await updateProfile(user, { displayName: usernameInput });
+                    
+                    // 2. สร้างเอกสารใน Firestore พร้อมให้โบนัสต้อนรับ 500 พอยต์ ทันที
+                    const userDocRef = doc(db, "users", user.uid);
+                    await setDoc(userDocRef, { 
+                        displayName: usernameInput,
+                        points: 500 // ให้พอยต์ฟรี 500
+                    }, { merge: true });
+
+                    navigate('page-home');
                 })
                 .catch((error) => alert("เกิดข้อผิดพลาด: " + error.message));
         }
@@ -585,17 +626,12 @@
         }
     }
 
-    // ==========================================
-    // ฟังก์ชันดึงพิกัดและเปิด Google Maps (อัปเดตใหม่)
-    // ==========================================
     window.findNearYou = function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
-                    // อัปเดตโค้ด: ส่งพิกัดตรงๆ เพื่อปักหมุดตำแหน่งของผู้ใช้
                     const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
                     window.open(mapsUrl, '_blank');
                 },
