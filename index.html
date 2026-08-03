@@ -189,12 +189,12 @@
             </div>
         </div>
 
-        <!-- NEW: กิจกรรมร่วมกันระดับท้องถิ่น (Local Events) - เปิดเว็บได้จริง -->
+        <!-- NEW: กิจกรรมร่วมกันระดับท้องถิ่น (Local Events) - แสดง Modal เพื่อการศึกษา -->
         <div class="mt-6 mx-5 mb-8">
             <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="localEventsTitle">กิจกรรมรักษ์โลกใกล้คุณ</h3>
             <div class="flex overflow-x-auto pb-4 scrollbar-hide space-x-4">
                 <!-- กิจกรรมที่ 1 -->
-                <div class="min-w-[240px] bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden cursor-pointer hover:bg-green-50 transition" onclick="window.open('https://www.mju.ac.th/', '_blank')">
+                <div class="min-w-[240px] bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden cursor-pointer hover:bg-green-50 transition" onclick="showSimulatedEventAlert()">
                     <div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">28 ส.ค. 26</div>
                     <h4 class="font-bold text-sm text-gray-800 mt-2" data-i18n="event1Title">อาสาสมัครแยกขยะ @ม.แม่โจ้</h4>
                     <p class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-location-dot text-red-400"></i> <span data-i18n="event1Loc">มหาวิทยาลัยแม่โจ้ (สันทราย)</span></p>
@@ -204,7 +204,7 @@
                     </div>
                 </div>
                 <!-- กิจกรรมที่ 2 -->
-                <div class="min-w-[240px] bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden cursor-pointer hover:bg-blue-50 transition" onclick="window.open('https://biochar.life/', '_blank')">
+                <div class="min-w-[240px] bg-white rounded-2xl p-4 shadow-sm relative overflow-hidden cursor-pointer hover:bg-blue-50 transition" onclick="showSimulatedEventAlert()">
                     <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">5 ก.ย. 26</div>
                     <h4 class="font-bold text-sm text-gray-800 mt-2" data-i18n="event2Title">โปรเจกต์ลดฝุ่น PM 2.5 (BioChar)</h4>
                     <p class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-location-dot text-red-400"></i> <span data-i18n="event2Loc">เชียงใหม่ (ร่วมกับ Grab)</span></p>
@@ -966,6 +966,7 @@
         }
     };
 
+    // ================= อัปเดตฟังก์ชัน showModal เพื่อรองรับแจ้งเตือนแบบ Info (สีฟ้า) =================
     window.showModal = function(options) {
         return new Promise((resolve) => {
             const modal = document.getElementById('custom-modal');
@@ -995,6 +996,9 @@
             } else if (options.type === 'error') {
                 iconContainer.classList.add('bg-red-100');
                 icon.className = "fa-solid fa-xmark text-red-500 text-3xl";
+            } else if (options.type === 'info') {
+                iconContainer.classList.add('bg-blue-100');
+                icon.className = "fa-solid fa-circle-info text-blue-500 text-3xl";
             } else if (options.type === 'barcode') {
                 iconContainer.classList.add('hidden');
             }
@@ -1019,6 +1023,22 @@
 
             btnConfirm.onclick = () => closeModal(true);
             btnCancel.onclick = () => closeModal(false);
+        });
+    }
+
+    // ================= NEW: ฟังก์ชันแจ้งเตือนกิจกรรมสมมุติ =================
+    window.showSimulatedEventAlert = async function() {
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        const title = currentLang === 'th' ? 'ข้อมูลกิจกรรม' : 'Event Information';
+        const msg = currentLang === 'th' ? 
+            'รายละเอียดยังไม่พร้อมใช้งาน เนื่องจากกิจกรรมนี้เป็นเพียงกิจกรรมที่สมมุติขึ้นเพื่อการศึกษาเท่านั้น (ไม่มีอยู่จริง)' : 
+            'Details are currently unavailable as this is a fictional event created for educational purposes only.';
+        
+        await window.showModal({
+            type: 'info',
+            title: title,
+            message: msg,
+            confirmText: translations[currentLang].modalOk
         });
     }
 
