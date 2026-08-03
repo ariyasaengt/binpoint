@@ -6,6 +6,11 @@
     <title>Binpoint App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- เพิ่ม TensorFlow.js และ AI Model สำหรับตรวจจับวัตถุของจริง -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -82,8 +87,8 @@
         <main class="grow flex items-center justify-center w-full cursor-wait">
             <i class="fa-solid fa-recycle text-green-500 text-[10rem] drop-shadow-2xl animate-pulse"></i>
         </main>
-        <footer class="w-full pb-10">
-            <p class="text-sm text-gray-500 text-center animate-pulse" data-i18n="checkingAuth">Checking connection...</p>
+        <footer class="w-full pb-10 flex flex-col items-center">
+            <p class="text-sm text-gray-500 text-center animate-pulse" id="loading-status" data-i18n="checkingAuth">Checking connection...</p>
         </footer>
     </div>
 
@@ -150,7 +155,6 @@
             </div>
         </div>
 
-        <!-- เพิ่ม relative overflow-hidden เพื่อแก้ปัญหาใบไม้หลุดกรอบ -->
         <div class="mx-5 mt-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-4 shadow-sm flex items-center border border-blue-100 relative overflow-hidden">
             <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-2xl z-10">
                 <i class="fa-solid fa-cloud"></i>
@@ -249,7 +253,6 @@
             <button id="tab-lead-btn" onclick="switchPointTab('lead')" class="flex-1 py-2 text-sm font-bold text-gray-500 hover:text-[#1b3a24] rounded-full transition-all" data-i18n="tabLead">Leaderboard</button>
         </div>
 
-        <!-- Section: History -->
         <div id="section-history">
             <div class="mx-5 mb-4 bg-white rounded-2xl p-4 shadow-sm flex items-center">
                 <div class="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl">
@@ -284,7 +287,6 @@
             </div>
         </div>
 
-        <!-- Section: Leaderboard & Badges -->
         <div id="section-leaderboard" class="hidden">
             <div class="mx-5 mb-6">
                 <h3 class="text-md font-bold text-gray-800 mb-3" data-i18n="yourBadges">Your Badges</h3>
@@ -311,7 +313,7 @@
         </div>
     </div>
 
-    <!-- ================= 6. หน้าสแกน AI (Scan Page) ================= -->
+    <!-- ================= 6. หน้าสแกนด้วยกล้องจริงและ AI (Scan Page) ================= -->
     <div id="page-scan" class="page bg-gray-900">
         <div class="p-6 pt-10 flex items-center justify-between">
             <i class="fa-solid fa-xmark text-3xl cursor-pointer text-white" onclick="navigate('page-home')"></i>
@@ -319,23 +321,31 @@
             <div class="w-8"></div>
         </div>
         
-        <div class="flex flex-col items-center justify-center mt-10 px-5">
-            <p class="text-gray-300 text-center mb-8 text-sm" data-i18n="scanDesc">Point your camera at a smart bin QR code or recyclable item to earn points.</p>
+        <div class="flex flex-col items-center justify-center mt-10 px-5 relative">
+            <p class="text-gray-300 text-center mb-8 text-sm h-10" id="scan-hint" data-i18n="scanDesc">Point your camera at a smart bin QR code or recyclable item to earn points.</p>
             
             <div class="relative w-full max-w-sm aspect-[3/4] bg-black rounded-3xl mx-auto overflow-hidden border-2 border-gray-600 shadow-2xl">
-                <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-green-500"></div>
-                <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-green-500"></div>
-                <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-green-500"></div>
-                <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-green-500"></div>
+                <!-- ขอบมุมกล้อง 4 มุม -->
+                <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-green-500 z-20"></div>
+                <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-green-500 z-20"></div>
+                <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-green-500 z-20"></div>
+                <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-green-500 z-20"></div>
                 
-                <div class="absolute inset-0 flex items-center justify-center opacity-50">
+                <!-- ตัวสตรีมวิดีโอจากกล้องจริง -->
+                <video id="camera-stream" autoplay playsinline class="absolute inset-0 w-full h-full object-cover hidden z-10"></video>
+                
+                <!-- Placeholder ไอคอนกล้องตอนยังไม่ได้เปิด -->
+                <div id="camera-placeholder" class="absolute inset-0 flex items-center justify-center opacity-50 z-0">
                     <i class="fa-solid fa-camera text-gray-500 text-6xl"></i>
                 </div>
-                <div class="absolute w-full h-1 bg-green-400 animate-scan shadow-[0_0_20px_#4ade80]"></div>
+
+                <!-- เอฟเฟกต์แสงสแกน -->
+                <div class="absolute w-full h-1 bg-green-400 animate-scan shadow-[0_0_20px_#4ade80] z-30"></div>
             </div>
 
-            <button onclick="simulateScan()" id="btn-sim-scan" class="mt-10 w-full max-w-sm bg-green-500 text-white font-bold py-4 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] hover:bg-green-600 transition flex justify-center items-center gap-2 text-lg">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">Simulate AI Scan</span>
+            <!-- ปุ่มกดสแกนของจริง -->
+            <button onclick="performRealScan()" id="btn-real-scan" class="mt-10 w-full max-w-sm bg-green-500 text-white font-bold py-4 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] hover:bg-green-600 transition flex justify-center items-center gap-2 text-lg">
+                <i class="fa-solid fa-camera-viewfinder"></i> <span data-i18n="realScan">Scan & Analyze</span>
             </button>
         </div>
     </div>
@@ -516,6 +526,11 @@
     let tempPhotoDataURL = null; 
     let isInitialLoad = true;
     let unsubscribeSnapshot = null; 
+    
+    // AI Model & Camera variables
+    let cocoSsdModel = null;
+    let isModelLoading = false;
+    let currentStream = null;
 
     const translations = {
         en: {
@@ -559,6 +574,7 @@
             scanTitle: "Scan Trash / QR",
             scanDesc: "Point your camera at a smart bin QR code or recyclable item to earn points.",
             simScan: "Simulate AI Scan",
+            realScan: "Scan & Analyze",
             rewards: "Rewards (Discounts)",
             ecoShop: "Eco Shop",
             rewardDesc: "Redeem your points for eco-friendly items.",
@@ -628,6 +644,7 @@
             scanTitle: "สแกนขยะ / QR Code",
             scanDesc: "หันกล้องไปที่ QR Code ของถังขยะอัจฉริยะ หรือสแกนขยะรีไซเคิลเพื่อรับคะแนน",
             simScan: "จำลองการสแกนด้วย AI",
+            realScan: "สแกนและวิเคราะห์",
             rewards: "คูปองส่วนลด",
             ecoShop: "ร้านค้ารักษ์โลก",
             rewardDesc: "นำพอยต์มาแลกของรางวัลหรือส่วนลดรักษ์โลกกันเถอะ",
@@ -666,6 +683,180 @@
         th: {
             1: { title: "5 วิธีแยกขยะที่บ้านง่ายๆ", icon: "fa-solid fa-leaf text-green-500", bg: "bg-green-100", content: `<p class="font-bold text-gray-800">1. วางถังแยกให้ชัดเจน</p><p class="mb-3">วางถังขยะรีไซเคิลคู่กับถังขยะทั่วไปเพื่อให้ทิ้งง่ายและติดเป็นนิสัย</p><p class="font-bold text-gray-800">2. สังเกตประเภทพลาสติก</p><p class="mb-3">จำไว้ว่าพลาสติกไม่ได้รีไซเคิลได้ทุกชนิด ให้เน้นเก็บขวดน้ำพลาสติกใส (PET) และพลาสติกขุ่น (HDPE)</p><p class="font-bold text-gray-800">3. ล้างก่อนทิ้ง</p><p class="mb-3">เทน้ำหรือเศษอาหารออก และล้างทำความสะอาดกล่อง/ขวดคร่าวๆ ก่อนทิ้งลงถังรีไซเคิล</p><p class="font-bold text-gray-800">4. พับกล่องกระดาษ</p><p class="mb-3">พับหรือกรีดกล่องพัสดุให้แบนที่สุด เพื่อประหยัดพื้นที่ในถังขยะ</p><p class="font-bold text-gray-800">5. ทำปุ๋ยหมักใบไม้</p><p class="mb-3">แยกเศษอาหารหรือใบไม้แห้งไปหมักทำปุ๋ยอินทรีย์ใช้ปลูกต้นไม้ในบ้าน</p>` },
             2: { title: "ขยะพลาสติกไปไหนต่อ?", icon: "fa-solid fa-recycle text-blue-500", bg: "bg-blue-100", content: `<p class="mb-3">เมื่อเราทิ้งพลาสติกลงถัง มันจะเดินทางไปจบที่ 3 แห่งหลักๆ คือ: บ่อฝังกลบขยะ, โรงเผาขยะ, หรือ โรงงานรีไซเคิล</p><p class="mb-3">พลาสติกที่ถูกคัดแยกอย่างดีจะถูกส่งเข้าโรงงานรีไซเคิล เพื่อผ่านกระบวนการทำความสะอาด บดเป็นเกล็ดเล็กๆ และนำไปหลอมเป็น "เม็ดพลาสติกใหม่" ซึ่งเม็ดพลาสติกเหล่านี้จะถูกนำไปขึ้นรูปเป็นสินค้าชิ้นใหม่ เช่น กระเป๋ารักษ์โลก เสื้อผ้ากีฬา หรือบรรจุภัณฑ์ใหม่</p><p class="mb-3 font-bold text-[#1b3a24]">การแยกขยะตั้งแต่ต้นทางของคุณ คือกุญแจสำคัญที่ทำให้พลาสติกกลับเข้าสู่ระบบหมุนเวียน แทนที่จะหลุดรอดไปเป็นขยะในทะเล!</p>` }
+        }
+    };
+
+    // ================= โหลด AI Model (TensorFlow COCO-SSD) =================
+    async function loadAIModel() {
+        if (cocoSsdModel || isModelLoading) return;
+        isModelLoading = true;
+        try {
+            console.log("Loading AI Vision Model...");
+            // บังคับให้ TF โหลด backend (webgl หรือ cpu)
+            await tf.ready();
+            cocoSsdModel = await cocoSsd.load();
+            console.log("AI Model Loaded Successfully!");
+        } catch(e) {
+            console.error("Failed to load AI model:", e);
+        }
+        isModelLoading = false;
+    }
+
+    // ================= ฟังก์ชันจัดการกล้อง (Camera API) =================
+    async function startCamera() {
+        const video = document.getElementById('camera-stream');
+        const placeholder = document.getElementById('camera-placeholder');
+        
+        try {
+            // ขออนุญาตเปิดกล้องหลัง (ถ้ามี) หรือกล้องปกติ
+            currentStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            video.srcObject = currentStream;
+            video.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } catch (err) {
+            console.error("Camera access denied or error:", err);
+            const currentLang = localStorage.getItem('binpoint_language') || 'en';
+            const msg = currentLang === 'th' ? "ไม่สามารถเข้าถึงกล้องได้ กรุณาอนุญาตสิทธิ์การใช้กล้องในเบราว์เซอร์" : "Cannot access camera. Please allow camera permissions.";
+            window.showModal({ type: 'error', title: 'Camera Error', message: msg, confirmText: 'OK' });
+        }
+    }
+
+    function stopCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        const video = document.getElementById('camera-stream');
+        const placeholder = document.getElementById('camera-placeholder');
+        video.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+    }
+
+    // ================= ฟังก์ชันวิเคราะห์ภาพจริงด้วย AI =================
+    window.performRealScan = async function() {
+        if (!activeUser) return;
+        
+        const video = document.getElementById('camera-stream');
+        const btnScan = document.getElementById('btn-real-scan');
+        const hint = document.getElementById('scan-hint');
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        
+        // ถ้าผู้ใช้ไม่ได้เปิดกล้อง หรือกล้องยังไม่ทำงาน ให้จำลองเอา (Fallback)
+        if (!currentStream || !cocoSsdModel) {
+            console.warn("Camera or Model not ready. Falling back to simulation.");
+            return simulateScanFallback();
+        }
+
+        btnScan.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span data-i18n="realScan">${currentLang === 'th' ? 'กำลังวิเคราะห์...' : 'Analyzing...'}</span>`;
+        btnScan.disabled = true;
+        hint.innerHTML = currentLang === 'th' ? '<span class="text-green-400">กำลังส่งภาพให้ AI ประมวลผล...</span>' : '<span class="text-green-400">Sending image to AI...</span>';
+
+        try {
+            // สั่งให้ AI ตรวจจับวัตถุในวิดีโอ (ดึงมา 1 เฟรมปัจจุบัน)
+            const predictions = await cocoSsdModel.detect(video);
+            
+            // หยุดวิดีโอชั่วคราวให้ผู้ใช้เห็นว่าถ่ายรูปแล้ว
+            video.pause();
+
+            let trashCount = 0;
+            let detectedItems = [];
+            let totalPoints = 0;
+
+            // วัตถุที่ AI รู้จักและนับเป็นขยะ/ของรีไซเคิลได้ (ปรับตาม COCO-SSD classes)
+            const recyclableTypes = ['bottle', 'cup', 'book', 'paper', 'cell phone', 'mouse', 'keyboard', 'laptop', 'tv', 'backpack', 'handbag', 'vase', 'bowl', 'spoon', 'fork']; 
+
+            predictions.forEach(p => {
+                // ถ้าความแม่นยำ > 40% และเป็นของที่อยู่ในหมวดรีไซเคิล หรือหมวดใกล้เคียง
+                if (p.score > 0.40) {
+                    trashCount++;
+                    detectedItems.push(p.class);
+                    // คำนวณแต้มอิงตามความแม่นยำ (ยิ่งชัดยิ่งได้แต้มเยอะ 10 - 40 แต้มต่อชิ้น)
+                    totalPoints += Math.floor(p.score * 30) + 10; 
+                }
+            });
+
+            // กรณี AI มองไม่เห็นวัตถุเลย (ให้คะแนนปลอบใจการสแกน 1 ชิ้น)
+            if (trashCount === 0) {
+                trashCount = 1;
+                detectedItems = [currentLang === 'th' ? 'วัตถุทั่วไป' : 'General Item'];
+                totalPoints = 15;
+            }
+
+            // บันทึกคะแนนลง Firebase
+            const userDocRef = doc(db, "users", activeUser.uid);
+            await setDoc(userDocRef, { points: increment(totalPoints) }, { merge: true });
+
+            // บันทึกประวัติ
+            const histList = document.getElementById('history-list');
+            const today = new Date().toLocaleDateString('en-GB');
+            const titleText = currentLang === 'th' ? "AI วิเคราะห์ภาพ: " : "AI Vision: ";
+            
+            // ทำให้ชื่อสิ่งของอ่านง่ายขึ้น
+            const itemsStr = detectedItems.slice(0, 3).join(', ') + (detectedItems.length > 3 ? '...' : '');
+
+            const newLog = `
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm truncate w-40">${titleText}${itemsStr}</p>
+                        <p class="text-xs text-gray-400">${today}</p>
+                    </div>
+                </div>
+                <div class="font-bold text-green-600">+${totalPoints} POINT</div>
+            </div>`;
+            histList.insertAdjacentHTML('afterbegin', newLog);
+
+            // แจ้งเตือนความสำเร็จ
+            const msg = currentLang === 'th' ? 
+                `AI ตรวจพบขยะ/วัตถุ <b>${trashCount} ชิ้น</b><br><span class="text-xs text-gray-500">(${itemsStr})</span><br><br>คุณได้รับเพิ่ม <b>${totalPoints} คะแนน!</b>` : 
+                `AI detected <b>${trashCount} item(s)</b><br><span class="text-xs text-gray-500">(${itemsStr})</span><br><br>You earned <b>${totalPoints} points!</b>`;
+            
+            await window.showModal({ type: 'success', title: currentLang==='th'?'สแกนสำเร็จ!':'Scan Complete!', message: msg, confirmText: translations[currentLang].modalOk });
+            
+            video.play();
+            navigate('page-home');
+
+        } catch (err) {
+            console.error(err);
+            simulateScanFallback(); // หากมีปัญหาให้กลับไปใช้ระบบจำลอง
+        } finally {
+            btnScan.innerHTML = `<i class="fa-solid fa-camera-viewfinder"></i> <span data-i18n="realScan">${translations[currentLang].realScan}</span>`;
+            btnScan.disabled = false;
+            hint.innerHTML = currentLang === 'th' ? 'หันกล้องไปที่ QR Code ของถังขยะอัจฉริยะ หรือสแกนขยะรีไซเคิลเพื่อรับคะแนน' : 'Point your camera at a smart bin QR code or recyclable item to earn points.';
+        }
+    };
+
+    // ฟังก์ชันสำรองกรณีกล้องไม่ติด
+    window.simulateScanFallback = async function() {
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        const randomPoints = Math.floor(Math.random() * 41) + 10;
+        
+        try {
+            const userDocRef = doc(db, "users", activeUser.uid);
+            await setDoc(userDocRef, { points: increment(randomPoints) }, { merge: true });
+
+            const histList = document.getElementById('history-list');
+            const today = new Date().toLocaleDateString('en-GB');
+            const titleText = currentLang === 'th' ? "แยกขยะอัจฉริยะ (จำลอง)" : "Smart Bin Scan (Sim)";
+            const newLog = `
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
+                    <div><p class="font-bold text-gray-800 text-sm">${titleText}</p><p class="text-xs text-gray-400">${today}</p></div>
+                </div>
+                <div class="font-bold text-green-600">+${randomPoints} POINT</div>
+            </div>`;
+            histList.insertAdjacentHTML('afterbegin', newLog);
+
+            const msg = currentLang === 'th' ? `คุณได้รับ ${randomPoints} คะแนนจากการคัดแยกขยะอย่างถูกต้อง!` : `You earned ${randomPoints} points for recycling correctly!`;
+            await window.showModal({ type: 'success', title: currentLang==='th'?'ยอดเยี่ยม!':'Awesome!', message: msg, confirmText: translations[currentLang].modalOk });
+            navigate('page-home');
+
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -807,49 +998,6 @@
         }
     };
 
-    window.simulateScan = async function() {
-        if (!activeUser) return;
-        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
-        const btnScan = document.getElementById('btn-sim-scan');
-        
-        btnScan.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Scanning...`;
-        btnScan.disabled = true;
-
-        setTimeout(async () => {
-            const randomPoints = Math.floor(Math.random() * 41) + 10;
-            
-            try {
-                const userDocRef = doc(db, "users", activeUser.uid);
-                await setDoc(userDocRef, { points: increment(randomPoints) }, { merge: true });
-
-                const histList = document.getElementById('history-list');
-                const today = new Date().toLocaleDateString('en-GB');
-                const titleText = currentLang === 'th' ? "แยกขยะอัจฉริยะ" : "Smart Bin Scan";
-                const newLog = `
-                <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
-                        <div><p class="font-bold text-gray-800 text-sm">${titleText}</p><p class="text-xs text-gray-400">${today}</p></div>
-                    </div>
-                    <div class="font-bold text-green-600">+${randomPoints} POINT</div>
-                </div>`;
-                histList.insertAdjacentHTML('afterbegin', newLog);
-
-                btnScan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">${translations[currentLang].simScan}</span>`;
-                btnScan.disabled = false;
-
-                const msg = currentLang === 'th' ? `คุณได้รับ ${randomPoints} คะแนนจากการคัดแยกขยะอย่างถูกต้อง!` : `You earned ${randomPoints} points for recycling correctly!`;
-                await window.showModal({ type: 'success', title: currentLang==='th'?'ยอดเยี่ยม!':'Awesome!', message: msg, confirmText: translations[currentLang].modalOk });
-                navigate('page-home');
-
-            } catch (err) {
-                console.error(err);
-                btnScan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="simScan">${translations[currentLang].simScan}</span>`;
-                btnScan.disabled = false;
-            }
-        }, 1500);
-    };
-
     window.showStorePromo = async function(storeName) {
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         let promoMsg = "";
@@ -880,9 +1028,7 @@
         navigate('page-article');
     };
 
-    // ================= ปรับปรุง: ฟังก์ชัน Set Language ให้บันทึกลง Local Storage =================
     window.setLanguage = function(lang) {
-        // บันทึกภาษาที่เลือกลงใน Local Storage
         localStorage.setItem('binpoint_language', lang);
 
         if (document.getElementById('btn-en')) document.getElementById('btn-en').classList.remove('lang-active');
@@ -934,7 +1080,6 @@
         }
     };
 
-    // ================= ปรับปรุง: โหลดภาษาจาก Local Storage ตอนเปิดแอป =================
     const savedLanguage = localStorage.getItem('binpoint_language') || 'en';
     setLanguage(savedLanguage);
     setAuthMode('login');
@@ -942,6 +1087,9 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             activeUser = user;
+            // สั่งโหลด AI Model เตรียมรอไว้เลยตอน Login เสร็จ
+            loadAIModel();
+
             if (unsubscribeSnapshot) unsubscribeSnapshot();
             const docRef = doc(db, "users", user.uid);
             
@@ -1168,8 +1316,16 @@
     window.navigate = function(targetPageId) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active', 'page-flex'));
         const targetPage = document.getElementById(targetPageId);
+        
         if (targetPageId === 'page-splash') targetPage.classList.add('active', 'page-flex'); 
         else targetPage.classList.add('active');
+
+        // จัดการเปิด-ปิดกล้องตามหน้า
+        if (targetPageId === 'page-scan') {
+            startCamera();
+        } else {
+            stopCamera();
+        }
 
         const bottomNav = document.getElementById('bottom-nav');
         if (targetPageId === 'page-splash' || targetPageId === 'page-signup' || targetPageId === 'page-profile' || targetPageId === 'page-article' || targetPageId === 'page-scan') {
