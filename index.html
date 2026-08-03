@@ -7,9 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- เพิ่ม TensorFlow.js และ AI Model สำหรับตรวจจับวัตถุของจริง -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+    <!-- เอา TensorFlow Script ออกจากตรงนี้ เพื่อไม่ให้บล็อกการโหลดหน้าเว็บ -->
 
     <style>
         body {
@@ -313,7 +311,7 @@
         </div>
     </div>
 
-    <!-- ================= 6. หน้าสแกนด้วยกล้องจริงและ AI (Scan Page) ================= -->
+    <!-- ================= 6. หน้าสแกน AI (Scan Page) ================= -->
     <div id="page-scan" class="page bg-gray-900">
         <div class="p-6 pt-10 flex items-center justify-between">
             <i class="fa-solid fa-xmark text-3xl cursor-pointer text-white" onclick="navigate('page-home')"></i>
@@ -325,25 +323,19 @@
             <p class="text-gray-300 text-center mb-8 text-sm h-10" id="scan-hint" data-i18n="scanDesc">Point your camera at a smart bin QR code or recyclable item to earn points.</p>
             
             <div class="relative w-full max-w-sm aspect-[3/4] bg-black rounded-3xl mx-auto overflow-hidden border-2 border-gray-600 shadow-2xl">
-                <!-- ขอบมุมกล้อง 4 มุม -->
                 <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-green-500 z-20"></div>
                 <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-green-500 z-20"></div>
                 <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-green-500 z-20"></div>
                 <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-green-500 z-20"></div>
                 
-                <!-- ตัวสตรีมวิดีโอจากกล้องจริง -->
                 <video id="camera-stream" autoplay playsinline class="absolute inset-0 w-full h-full object-cover hidden z-10"></video>
                 
-                <!-- Placeholder ไอคอนกล้องตอนยังไม่ได้เปิด -->
                 <div id="camera-placeholder" class="absolute inset-0 flex items-center justify-center opacity-50 z-0">
                     <i class="fa-solid fa-camera text-gray-500 text-6xl"></i>
                 </div>
-
-                <!-- เอฟเฟกต์แสงสแกน -->
                 <div class="absolute w-full h-1 bg-green-400 animate-scan shadow-[0_0_20px_#4ade80] z-30"></div>
             </div>
 
-            <!-- ปุ่มกดสแกนของจริง -->
             <button onclick="performRealScan()" id="btn-real-scan" class="mt-10 w-full max-w-sm bg-green-500 text-white font-bold py-4 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)] hover:bg-green-600 transition flex justify-center items-center gap-2 text-lg">
                 <i class="fa-solid fa-camera-viewfinder"></i> <span data-i18n="realScan">Scan & Analyze</span>
             </button>
@@ -527,7 +519,6 @@
     let isInitialLoad = true;
     let unsubscribeSnapshot = null; 
     
-    // AI Model & Camera variables
     let cocoSsdModel = null;
     let isModelLoading = false;
     let currentStream = null;
@@ -686,13 +677,29 @@
         }
     };
 
-    // ================= โหลด AI Model (TensorFlow COCO-SSD) =================
+    // ================= โหลดสคริปต์ AI (Lazy Loading) =================
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
     async function loadAIModel() {
         if (cocoSsdModel || isModelLoading) return;
         isModelLoading = true;
         try {
+            console.log("Downloading AI scripts in background...");
+            if (typeof tf === 'undefined') {
+                await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js");
+            }
+            if (typeof cocoSsd === 'undefined') {
+                await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js");
+            }
             console.log("Loading AI Vision Model...");
-            // บังคับให้ TF โหลด backend (webgl หรือ cpu)
             await tf.ready();
             cocoSsdModel = await cocoSsd.load();
             console.log("AI Model Loaded Successfully!");
@@ -702,13 +709,11 @@
         isModelLoading = false;
     }
 
-    // ================= ฟังก์ชันจัดการกล้อง (Camera API) =================
     async function startCamera() {
         const video = document.getElementById('camera-stream');
         const placeholder = document.getElementById('camera-placeholder');
         
         try {
-            // ขออนุญาตเปิดกล้องหลัง (ถ้ามี) หรือกล้องปกติ
             currentStream = await navigator.mediaDevices.getUserMedia({ 
                 video: { facingMode: 'environment' } 
             });
@@ -734,7 +739,6 @@
         placeholder.classList.remove('hidden');
     }
 
-    // ================= ฟังก์ชันวิเคราะห์ภาพจริงด้วย AI =================
     window.performRealScan = async function() {
         if (!activeUser) return;
         
@@ -743,7 +747,6 @@
         const hint = document.getElementById('scan-hint');
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         
-        // ถ้าผู้ใช้ไม่ได้เปิดกล้อง หรือกล้องยังไม่ทำงาน ให้จำลองเอา (Fallback)
         if (!currentStream || !cocoSsdModel) {
             console.warn("Camera or Model not ready. Falling back to simulation.");
             return simulateScanFallback();
@@ -754,46 +757,33 @@
         hint.innerHTML = currentLang === 'th' ? '<span class="text-green-400">กำลังส่งภาพให้ AI ประมวลผล...</span>' : '<span class="text-green-400">Sending image to AI...</span>';
 
         try {
-            // สั่งให้ AI ตรวจจับวัตถุในวิดีโอ (ดึงมา 1 เฟรมปัจจุบัน)
             const predictions = await cocoSsdModel.detect(video);
-            
-            // หยุดวิดีโอชั่วคราวให้ผู้ใช้เห็นว่าถ่ายรูปแล้ว
             video.pause();
 
             let trashCount = 0;
             let detectedItems = [];
             let totalPoints = 0;
 
-            // วัตถุที่ AI รู้จักและนับเป็นขยะ/ของรีไซเคิลได้ (ปรับตาม COCO-SSD classes)
-            const recyclableTypes = ['bottle', 'cup', 'book', 'paper', 'cell phone', 'mouse', 'keyboard', 'laptop', 'tv', 'backpack', 'handbag', 'vase', 'bowl', 'spoon', 'fork']; 
-
             predictions.forEach(p => {
-                // ถ้าความแม่นยำ > 40% และเป็นของที่อยู่ในหมวดรีไซเคิล หรือหมวดใกล้เคียง
                 if (p.score > 0.40) {
                     trashCount++;
                     detectedItems.push(p.class);
-                    // คำนวณแต้มอิงตามความแม่นยำ (ยิ่งชัดยิ่งได้แต้มเยอะ 10 - 40 แต้มต่อชิ้น)
                     totalPoints += Math.floor(p.score * 30) + 10; 
                 }
             });
 
-            // กรณี AI มองไม่เห็นวัตถุเลย (ให้คะแนนปลอบใจการสแกน 1 ชิ้น)
             if (trashCount === 0) {
                 trashCount = 1;
                 detectedItems = [currentLang === 'th' ? 'วัตถุทั่วไป' : 'General Item'];
                 totalPoints = 15;
             }
 
-            // บันทึกคะแนนลง Firebase
             const userDocRef = doc(db, "users", activeUser.uid);
             await setDoc(userDocRef, { points: increment(totalPoints) }, { merge: true });
 
-            // บันทึกประวัติ
             const histList = document.getElementById('history-list');
             const today = new Date().toLocaleDateString('en-GB');
             const titleText = currentLang === 'th' ? "AI วิเคราะห์ภาพ: " : "AI Vision: ";
-            
-            // ทำให้ชื่อสิ่งของอ่านง่ายขึ้น
             const itemsStr = detectedItems.slice(0, 3).join(', ') + (detectedItems.length > 3 ? '...' : '');
 
             const newLog = `
@@ -809,7 +799,6 @@
             </div>`;
             histList.insertAdjacentHTML('afterbegin', newLog);
 
-            // แจ้งเตือนความสำเร็จ
             const msg = currentLang === 'th' ? 
                 `AI ตรวจพบขยะ/วัตถุ <b>${trashCount} ชิ้น</b><br><span class="text-xs text-gray-500">(${itemsStr})</span><br><br>คุณได้รับเพิ่ม <b>${totalPoints} คะแนน!</b>` : 
                 `AI detected <b>${trashCount} item(s)</b><br><span class="text-xs text-gray-500">(${itemsStr})</span><br><br>You earned <b>${totalPoints} points!</b>`;
@@ -821,7 +810,7 @@
 
         } catch (err) {
             console.error(err);
-            simulateScanFallback(); // หากมีปัญหาให้กลับไปใช้ระบบจำลอง
+            simulateScanFallback(); 
         } finally {
             btnScan.innerHTML = `<i class="fa-solid fa-camera-viewfinder"></i> <span data-i18n="realScan">${translations[currentLang].realScan}</span>`;
             btnScan.disabled = false;
@@ -829,7 +818,6 @@
         }
     };
 
-    // ฟังก์ชันสำรองกรณีกล้องไม่ติด
     window.simulateScanFallback = async function() {
         const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
         const randomPoints = Math.floor(Math.random() * 41) + 10;
@@ -1087,7 +1075,6 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             activeUser = user;
-            // สั่งโหลด AI Model เตรียมรอไว้เลยตอน Login เสร็จ
             loadAIModel();
 
             if (unsubscribeSnapshot) unsubscribeSnapshot();
@@ -1320,7 +1307,6 @@
         if (targetPageId === 'page-splash') targetPage.classList.add('active', 'page-flex'); 
         else targetPage.classList.add('active');
 
-        // จัดการเปิด-ปิดกล้องตามหน้า
         if (targetPageId === 'page-scan') {
             startCamera();
         } else {
