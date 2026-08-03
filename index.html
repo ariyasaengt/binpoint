@@ -259,6 +259,7 @@
                 </div>
             </div>
 
+            <!-- กล่อง AI แจ้งเตือนอัจฉริยะ -->
             <div class="mx-5 mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
                 <i class="fa-solid fa-robot text-yellow-500 text-xl mt-0.5"></i>
                 <div>
@@ -268,18 +269,7 @@
             </div>
 
             <div class="mx-5 space-y-3" id="history-list">
-                <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3">
-                            <i class="fa-solid fa-gift"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">Welcome Bonus</p>
-                            <p class="text-xs text-gray-400" data-i18n="newAccount">New Account</p>
-                        </div>
-                    </div>
-                    <div class="font-bold text-orange-500">+500 POINT</div>
-                </div>
+                <!-- รายการประวัติจะถูกสร้างขึ้นด้วย Javascript จาก LocalStorage -->
             </div>
         </div>
 
@@ -675,6 +665,52 @@
         }
     };
 
+    // ================= ระบบบันทึกและแสดงประวัติถาวร =================
+    window.renderHistory = function() {
+        if (!activeUser) return;
+        const histList = document.getElementById('history-list');
+        if (!histList) return;
+
+        const currentLang = document.getElementById('btn-en').classList.contains('lang-active') ? 'en' : 'th';
+        
+        let logsHtml = '';
+        const logs = JSON.parse(localStorage.getItem('binpoint_history_' + activeUser.uid) || '[]');
+        
+        // วาดประวัติจากที่บันทึกไว้ใน LocalStorage
+        logs.forEach(log => {
+            const titleText = currentLang === 'th' ? log.titleTh : log.titleEn;
+            logsHtml += `
+            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mb-3 border-l-4 border-green-500">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
+                    <div class="w-[140px] sm:w-48">
+                        <p class="font-bold text-gray-800 text-sm truncate">${titleText}</p>
+                        ${log.itemsStr ? `<p class="text-xs text-gray-500 truncate">${log.itemsStr}</p>` : ''}
+                        <p class="text-[10px] text-gray-400">${log.date}</p>
+                    </div>
+                </div>
+                <div class="font-bold text-green-600">+${log.points}</div>
+            </div>`;
+        });
+
+        // กล่องโบนัสต้อนรับที่อยู่ล่างสุดเสมอ
+        const welcomeHtml = `
+        <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-lg mr-3">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-gray-800 text-sm" data-i18n="welcomeBonus">${translations[currentLang].welcomeBonus}</p>
+                    <p class="text-xs text-gray-400" data-i18n="newAccount">${translations[currentLang].newAccount}</p>
+                </div>
+            </div>
+            <div class="font-bold text-orange-500">+500 POINT</div>
+        </div>`;
+
+        histList.innerHTML = logsHtml + welcomeHtml;
+    };
+
     function loadScript(src) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -797,28 +833,23 @@
                 return; 
             }
 
+            // บันทึกคะแนนลง Database
             const userDocRef = doc(db, "users", activeUser.uid);
             await setDoc(userDocRef, { points: increment(totalPoints) }, { merge: true });
 
-            const histList = document.getElementById('history-list');
-            const today = new Date().toLocaleDateString('en-GB');
-            const titleText = currentLang === 'th' ? "AI สแกน: " : "AI Scanned: ";
+            // บันทึกประวัติลง LocalStorage ให้อยู่ถาวร
+            const newLog = {
+                titleTh: "AI สแกน: ",
+                titleEn: "AI Scanned: ",
+                itemsStr: detectedItems.slice(0, 2).join(', ') + (detectedItems.length > 2 ? '...' : ''),
+                points: totalPoints,
+                date: new Date().toLocaleDateString('en-GB')
+            };
+            let logs = JSON.parse(localStorage.getItem('binpoint_history_' + activeUser.uid) || '[]');
+            logs.unshift(newLog);
+            localStorage.setItem('binpoint_history_' + activeUser.uid, JSON.stringify(logs));
             
-            const itemsStr = detectedItems.slice(0, 2).join(', ') + (detectedItems.length > 2 ? '...' : '');
-
-            const newLog = `
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
-                    <div class="w-[140px] sm:w-48">
-                        <p class="font-bold text-gray-800 text-sm truncate">${titleText}</p>
-                        <p class="text-xs text-gray-500 truncate">${itemsStr}</p>
-                        <p class="text-[10px] text-gray-400">${today}</p>
-                    </div>
-                </div>
-                <div class="font-bold text-green-600">+${totalPoints}</div>
-            </div>`;
-            histList.insertAdjacentHTML('afterbegin', newLog);
+            renderHistory(); // อัปเดตหน้าจอทันที
 
             let itemsHtmlList = `<ul class="text-left text-xs text-gray-600 bg-gray-50 p-3 rounded-xl mt-3 mb-4 space-y-2 border border-gray-100 max-h-32 overflow-y-auto">`;
             detectedItems.forEach(item => {
@@ -853,18 +884,19 @@
             const userDocRef = doc(db, "users", activeUser.uid);
             await setDoc(userDocRef, { points: increment(randomPoints) }, { merge: true });
 
-            const histList = document.getElementById('history-list');
-            const today = new Date().toLocaleDateString('en-GB');
-            const titleText = currentLang === 'th' ? "แยกขยะอัจฉริยะ (จำลอง)" : "Smart Bin Scan (Sim)";
-            const newLog = `
-            <div class="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center mt-3 border-l-4 border-green-500">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-lg mr-3"><i class="fa-solid fa-camera"></i></div>
-                    <div><p class="font-bold text-gray-800 text-sm">${titleText}</p><p class="text-xs text-gray-400">${today}</p></div>
-                </div>
-                <div class="font-bold text-green-600">+${randomPoints} POINT</div>
-            </div>`;
-            histList.insertAdjacentHTML('afterbegin', newLog);
+            // บันทึกประวัติจำลองลง LocalStorage
+            const newLog = {
+                titleTh: "แยกขยะอัจฉริยะ (จำลอง)",
+                titleEn: "Smart Bin Scan (Sim)",
+                itemsStr: "",
+                points: randomPoints,
+                date: new Date().toLocaleDateString('en-GB')
+            };
+            let logs = JSON.parse(localStorage.getItem('binpoint_history_' + activeUser.uid) || '[]');
+            logs.unshift(newLog);
+            localStorage.setItem('binpoint_history_' + activeUser.uid, JSON.stringify(logs));
+            
+            renderHistory();
 
             const msg = currentLang === 'th' ? `คุณได้รับ ${randomPoints} คะแนนจากการคัดแยกขยะอย่างถูกต้อง!` : `You earned ${randomPoints} points for recycling correctly!`;
             await window.showModal({ type: 'success', title: currentLang==='th'?'ยอดเยี่ยม!':'Awesome!', message: msg, confirmText: translations[currentLang].modalOk });
@@ -1070,6 +1102,9 @@
                 else el.innerHTML = translations[lang][key];
             }
         });
+
+        // เปลี่ยนภาษาเสร็จ อัปเดตประวัติสแกนให้เป็นภาษาใหม่ด้วย
+        if (activeUser) renderHistory();
     };
 
     window.setAuthMode = function(mode) {
@@ -1129,6 +1164,9 @@
                 const co2Saved = (points * 0.01).toFixed(2);
                 document.getElementById('co2-saved').textContent = co2Saved;
             });
+
+            // โหลดประวัติขึ้นมาโชว์ทันทีเมื่อล็อกอินเสร็จ
+            renderHistory();
 
             if (isInitialLoad) {
                 navigate('page-home');
