@@ -736,7 +736,6 @@
         placeholder.classList.remove('hidden');
     }
 
-    // ================= ฟังก์ชันสแกนของจริงที่จูนใหม่เรียบร้อยแล้ว =================
     window.performRealScan = async function() {
         if (!activeUser) return;
         
@@ -755,30 +754,30 @@
         hint.innerHTML = currentLang === 'th' ? '<span class="text-green-400">กำลังสแกนและแยกประเภทขยะ...</span>' : '<span class="text-green-400">Analyzing trash types...</span>';
 
         try {
-            // สแกนจับวัตถุสูงสุด 50 ชิ้น และลดความมั่นใจลงมาเหลือ 0.25 (เพื่อให้จับได้หลายใบมากขึ้น)
             const predictions = await cocoSsdModel.detect(video, 50, 0.25);
             video.pause(); 
 
             let trashCount = 0;
             let detectedItems = [];
             let totalPoints = 0;
-            
-            const bottleTypes = [
-                { nameEn: "PET Plastic Bottle", nameTh: "ขวดพลาสติก (PET)", points: 20 },
-                { nameEn: "Glass Bottle", nameTh: "ขวดแก้ว", points: 30 },
-                { nameEn: "Aluminum Can", nameTh: "กระป๋องอลูมิเนียม", points: 50 } 
-            ];
 
             predictions.forEach(p => {
-                // จับเฉพาะขวดและกระป๋อง ที่มีความแม่นยำสูงกว่า 35%
                 if ((p.class === 'bottle' || p.class === 'cup') && p.score > 0.35) {
                     trashCount++;
                     
-                    const randomType = bottleTypes[Math.floor(Math.random() * bottleTypes.length)];
-                    const itemName = currentLang === 'th' ? randomType.nameTh : randomType.nameEn;
-                    
-                    detectedItems.push(`${itemName} (+${randomType.points})`);
-                    totalPoints += randomType.points; 
+                    let itemName = "";
+                    let itemPoints = 0;
+
+                    if (p.class === 'bottle') {
+                        itemName = currentLang === 'th' ? "ขวดพลาสติก (PET)" : "PET Plastic Bottle";
+                        itemPoints = 20;
+                    } else if (p.class === 'cup') {
+                        itemName = currentLang === 'th' ? "กระป๋องอลูมิเนียม" : "Aluminum Can";
+                        itemPoints = 30;
+                    }
+
+                    detectedItems.push(`${itemName} (+${itemPoints})`);
+                    totalPoints += itemPoints; 
                 }
             });
 
